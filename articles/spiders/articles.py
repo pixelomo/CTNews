@@ -4,7 +4,7 @@ import scrapy
 
 class ArticlesSpider(scrapy.Spider):
     name = "articles"
-    allowed_domains = ["https://cointelegraph.com"]
+    allowed_domains = ["cointelegraph.com"]
     start_urls = [
         'https://cointelegraph.com/rss',
     ]
