@@ -10,7 +10,7 @@ class ArticlesSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        for article_url in response.css("item::link").extract():
+        for article_url in response.xpath("//item/link").extract():
             yield scrapy.Request(response.urljoin(article_url), callback=self.parse_article_page)
         # next_page = response.css("li.next > a ::attr(href)").extract_first()
         # if next_page:
