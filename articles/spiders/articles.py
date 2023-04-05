@@ -11,14 +11,14 @@ class ArticlesSpider(scrapy.Spider):
 
     def parse(self, response):
         for article in response.xpath("//channel/item"):
-            article_url = article.xpath('link//text()').extract_first()
+            # article_url = article.xpath('link//text()').extract_first()
             # yield {
             #     'title' : article.xpath('title//text()').extract_first(),
             #     'link': article.xpath('link//text()').extract_first(),
             #     # scrapy.Request(response.urljoin(article.xpath('link//text()').extract_first()), callback=self.parse_article_page)
             #     # 'pubDate' : post.xpath('pubDate//text()').extract_first(),
             # }
-            yield scrapy.Request(response.urljoin(article_url), callback=self.parse_article_page)
+            yield scrapy.Request(response.urljoin(article.xpath('link//text()').extract_first()), callback=self.parse_article_page)
         # next_page = response.css("li.next > a ::attr(href)").extract_first()
         # if next_page:
         #     yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
