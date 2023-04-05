@@ -10,7 +10,7 @@ class ArticlesSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        for article in response.xpath("//channel/item")
+        for article in response.xpath("//channel/item"):
             article_url = article.xpath('link//text()').extract_first()
             # yield {
             #     'title' : article.xpath('title//text()').extract_first(),
