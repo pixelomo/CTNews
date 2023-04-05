@@ -10,8 +10,14 @@ class ArticlesSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        for article_url in response.xpath("//item/link").extract():
-            yield scrapy.Request(response.urljoin(article_url), callback=self.parse_article_page)
+        for article in response.xpath("//channel/item"):
+            yield {
+                # 'title' : post.xpath('title//text()').extract_first(),
+                # 'link': post.xpath('link//text()').extract_first(),
+                scrapy.Request(response.urljoin(post.xpath('link//text()').extract_first()), callback=self.parse_article_page)
+                # 'pubDate' : post.xpath('pubDate//text()').extract_first(),
+            }
+            # yield scrapy.Request(response.urljoin(article_url), callback=self.parse_article_page)
         # next_page = response.css("li.next > a ::attr(href)").extract_first()
         # if next_page:
         #     yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
