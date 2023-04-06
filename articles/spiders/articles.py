@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from CTNews.items import Article
+from articles.items import Article
 
 class ArticlesSpider(scrapy.Spider):
     name = "articles"
