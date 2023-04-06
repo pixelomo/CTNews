@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from dateutil.parser import parse
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///articles.db'
@@ -32,9 +33,10 @@ class Article(db.Model):
 class SaveArticleResource(Resource):
     def post(self):
         data = request.get_json()
+        pubDate = parse(data["pubDate"])
         article = Article(
             title=data["title"],
-            pubDate=data["pubDate"],
+            pubDate=pubDate,
             link=data["link"],
             text=data["text"],
             html=data["html"]
