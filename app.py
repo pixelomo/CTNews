@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request
+from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -6,13 +7,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///articles.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-from datetime import datetime
+api = Api(app)
 
-class Article(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    link = db.Column(db.String, nullable=False)
-    text = db.Column(db.Text, nullable=True)
-    html = db.Column(db.Text, nullable=True)
-    content_translated = db.Column(db.Text, nullable=True)
+class SaveArticleResource(Resource):
+    def post(self):
+        data = request.get_json()
+        article = ArticleModel(
+            title=data["title"],
+            pubDate=data["pubDate"],
+            link=data["link"],
+            text=data["text"],
+            html=data["html"]
+        )
+        db.session.add(article)
+        db.session.commit()
+        return {"message": "Article saved successfully."}
+
+api.add_resource(SaveArticleResource, "/api/save_article")
+
+if __name__ == "__main__":
+    app.run(debug=True)
