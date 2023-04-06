@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 import scrapy
 from articles.items import Article
+from app import app, Article as ArticleModel, db
 
 class ArticlesSpider(scrapy.Spider):
     name = "articles"
@@ -20,11 +20,27 @@ class ArticlesSpider(scrapy.Spider):
                 })
 
     def parse_article(self, response):
-        article = Article()
-        article["title"] = response.meta["title"]
-        article["link"] = response.url
-        article["pubDate"] = response.meta["pubDate"]
-        article["html"] = response.css(".post-content").get()
-        article["text"] = "".join(response.css(".post-content *::text").getall())
+        scraped_title = response.meta["title"]
+        scraped_link = response.url
+        scraped_pubDate = response.meta["pubDate"]
+        scraped_html = response.css(".post-content").get()
+        scraped_text = "".join(response.css(".post-content *::text").getall())
 
-        yield article
+        with app.app_context():
+            article = ArticleModel(
+                title=scraped_title,
+                pubDate=scraped_pubDate,
+                link=scraped_link,
+                text=scraped_text,
+                html=scraped_html
+            )
+            db.session.add(article)
+            db.session.commit()
+
+        yield {
+            "title": scraped_title,
+            "pubDate": scraped_pubDate,
+            "link": scraped_link,
+            "text": scraped_text,
+            "html": scraped_html
+        }
