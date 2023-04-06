@@ -6,7 +6,7 @@ from dateutil.parser import parse
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('postgres://lzitmwilupkzby:607d003af773d4ac532c8bab5ae63da535da8a134ce08c51d998d4cc38df2ade@ec2-34-226-11-94.compute-1.amazonaws.com:5432/damb56efd6dkql', 'sqlite:///articles.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///articles.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
