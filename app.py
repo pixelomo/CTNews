@@ -31,6 +31,7 @@ class Article(db.Model):
             "content_translated": self.content_translated,
         }
 
+
 class SaveArticleResource(Resource):
     def post(self):
         data = request.get_json()
