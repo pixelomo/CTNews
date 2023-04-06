@@ -24,6 +24,7 @@ class ArticlesSpider(scrapy.Spider):
         article["title"] = response.meta["title"]
         article["link"] = response.url
         article["pubDate"] = response.meta["pubDate"]
-        article["content"] = "".join(response.css(".post-full-text *::text").getall())
+        article["content"] = "".join(response.css(".post-content").getall())
+        # article["content"] = "".join(response.css(".post-content *::text").getall())
 
         yield article
