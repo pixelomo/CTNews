@@ -28,7 +28,7 @@ class ArticlesSpider(scrapy.Spider):
         scraped_text = "".join(response.css(".post-content *::text").getall())
 
         # Send a POST request to the Flask API with the scraped data
-        api_url = "http://localhost:5000/api/save_article"  # Update this URL if your Flask app is hosted elsewhere
+        api_url = "https://gentle-earth-02543.herokuapp.com/api/save_article"  # Update this URL if your Flask app is hosted elsewhere
         requests.post(api_url, json={
             "title": scraped_title,
             "pubDate": scraped_pubDate,
