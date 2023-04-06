@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
 
-
 class ArticlesSpider(scrapy.Spider):
     name = "articles"
     allowed_domains = ["cointelegraph.com"]
@@ -10,22 +9,18 @@ class ArticlesSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        for article in response.xpath("//channel/item"):
-            # article_url = article.xpath('link//text()').extract_first()
-            yield {
-                'title' : article.xpath('title//text()').extract_first(),
-                'link': article.xpath('link//text()').extract_first(),
-                # scrapy.Request(response.urljoin(article.xpath('link//text()').extract_first()), callback=self.parse_article_page)
-                # 'pubDate' : post.xpath('pubDate//text()').extract_first(),
-            }
-            yield scrapy.Request(response.urljoin(article.link)), callback=self.parse_article_page)
-        # next_page = response.css("li.next > a ::attr(href)").extract_first()
-        # if next_page:
-        #     yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
+        items = response.xpath("//item")
+        for item in items:
+            link = item.xpath("link/text()").get()
+            if link:
+                yield scrapy.Request(link, callback=self.parse_article, meta={
+                    "title": item.xpath("title/text()").get(),
+                    "pubDate": item.xpath("pubDate/text()").get(),
+                })
 
-    def parse_article_page(self, response):
-        item = {}
-        article = response.css(".post__article")
-        item["title"] = article.css("h1.post__title").extract_first()
-        item['lead'] = article.css(".post__block_lead-text").extract_first()
-        item['content'] = article.css(".post-content").extract_first()
+    def parse_article(self, response):
+        article = Article()
+        article["title"] = response.meta["title"]
+        article["link"] = response.url
+        article["pubDate"] = response.meta["pubDate"]
+        article["content"] = "".join(response.css(".post-full-text *::text").getall())
