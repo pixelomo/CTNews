@@ -6,8 +6,10 @@ from dateutil.parser import parse
 import os
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": ["https://gentle-earth-02543.herokuapp.com/", "http://127.0.0.1:5000"]}})
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)

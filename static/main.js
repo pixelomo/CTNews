@@ -25,6 +25,16 @@ $(document).ready(function () {
     }
 
     loadArticles();
+
+    const sidebar = document.querySelector(".sidebar");
+    const sidebarToggle = document.querySelector("#sidebar-toggle");
+
+    sidebarToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("minimized");
+        sidebarToggle.textContent = sidebar.classList.contains("minimized")
+        ? "Maximize Sidebar"
+        : "Minimize Sidebar";
+    });
 });
 
 
