@@ -1,4 +1,4 @@
-from translate import translate_with_gpt4
+from translate import translate_with_gpt
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
@@ -28,7 +28,7 @@ class ArticlesPipeline(object):
         # Translate each chunk and join them together
         translated_chunks = []
         for chunk in chunks:
-            translated_chunk = translate_with_gpt4(chunk)
+            translated_chunk = translate_with_gpt(chunk)
             print(f"Translated chunk: {translated_chunk}")  # Debugging
             if translated_chunk is not None:
                 translated_chunks.append(translated_chunk)

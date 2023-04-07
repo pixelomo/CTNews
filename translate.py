@@ -5,31 +5,26 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def translate_with_gpt4(text, model="gpt-3.5-turbo"):
+def translate_with_gpt(text, target_language="Japanese"):
     try:
-        response = openai.Chat.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that translates English text to Japanese."},
-                {"role": "user", "content": f"Translate the following English text to Japanese: {text}"}
-            ],
+        prompt = f"Translate the following English text to {target_language}:\n{text}"
+
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
             max_tokens=2048,  # Adjust the number of tokens based on the model limit
+            n=1,
+            stop=None,
             temperature=0.3,
         )
 
-        # Check if the response is valid and contains the expected fields
-        if response and 'choices' in response and len(response.choices) > 0 and 'message' in response.choices[0] and 'content' in response.choices[0].message:
-            translation = response.choices[0].message['content'].strip()
+        translated_text = response.choices[0].text.strip()
 
-            # Print debugging information
-            print(f"Original Text: {text}")
-            print(f"Translated Text: {translation}")
+        # Print debugging information
+        print(f"Original Text: {text}")
+        print(f"Translated Text: {translated_text}")
 
-            return translation
-        else:
-            print("Invalid response from the translation API:")
-            print(response)
-            return None
+        return translated_text
 
     except Exception as e:
         print(f"Error during translation: {e}")
