@@ -10,16 +10,18 @@ $(document).ready(function () {
         $.getJSON("/api/get_all_articles", function (data) {
             $("#article-list").empty();
             data.forEach(function (article) {
-                $("#article-list").append(
-                    $("<li>")
-                        .addClass("list-group-item")
-                        .text(article.title)
-                        .data("article", article)
-                        .on("click", function () {
-                            $("#original-html").html(article.html);
-                            tinymce.get("translation-editor").setContent(article.content_translated || '');
-                        })
-                );
+                $("<li>")
+                    .addClass("list-group-item")
+                    .text(article.title)
+                    .data("article", article)
+                    .on("click", function (event) {
+                        // Call the onArticleClick function and pass the event
+                        onArticleClick(event);
+
+                        $("#original-html").html(article.html);
+                        tinymce.get("translation-editor").setContent(article.content_translated || '');
+                    })
+                    .appendTo("#article-list");
             });
         });
     }
@@ -63,23 +65,12 @@ $(document).ready(function () {
         if (previousSelectedArticle) {
             previousSelectedArticle.classList.remove("selected-article");
         }
-
         // Add the selected-article class to the clicked article
         const clickedArticle = event.target.closest("li");
         if (clickedArticle) {
             clickedArticle.classList.add("selected-article");
         }
-
-        // Other code related to displaying the article content
     }
-
-    // Get all the articles in the sidebar
-    const articles = document.querySelectorAll(".sidebar li");
-
-    // Attach the onArticleClick function to each article's click event
-    articles.forEach((article) => {
-        article.addEventListener("click", onArticleClick);
-    });
 
 
 });

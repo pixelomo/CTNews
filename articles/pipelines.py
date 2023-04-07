@@ -1,12 +1,29 @@
 from translate import translate_with_gpt4
 
 class ArticlesPipeline(object):
+    def split_text(self, text, max_tokens):
+        words = text.split()
+        chunks = []
+        current_chunk = []
+
+        for word in words:
+            current_chunk.append(word)
+            if len(" ".join(current_chunk)) > max_tokens:
+                current_chunk.pop()  # Remove the last word that caused the overflow
+                chunks.append(" ".join(current_chunk))
+                current_chunk = [word]
+
+        if current_chunk:
+            chunks.append(" ".join(current_chunk))
+
+        return chunks
+
     def process_item(self, item, spider):
         article_text = item["text"]
         max_tokens = 2048  # Adjust based on the model limit
 
         # Split the text into chunks
-        chunks = split_text(article_text, max_tokens)
+        chunks = self.split_text(article_text, max_tokens)
 
         # Translate each chunk and join them together
         translated_chunks = []
