@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dateutil.parser import parse
 import os
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
@@ -15,7 +16,7 @@ class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=False, unique=True)  # Add unique constraint
     text = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
@@ -43,9 +44,13 @@ class SaveArticleResource(Resource):
             text=data["text"],
             html=data["html"]
         )
-        db.session.add(article)
-        db.session.commit()
-        return {"message": "Article saved successfully."}
+        try:
+            db.session.add(article)
+            db.session.commit()
+            return {"message": "Article saved successfully."}
+        except IntegrityError:
+            db.session.rollback()
+            return {"message": "Article with the same link already exists."}, 409
 
 class GetAllArticlesResource(Resource):
     def get(self):

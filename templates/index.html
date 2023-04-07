@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Articles</h2>
+            <ul id="article-list" class="list-group">
+                <!-- Articles will be populated here -->
+            </ul>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Original HTML</h2>
+                    <div id="original-html" class="border">
+                        <!-- Original HTML content will be displayed here -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h2>Japanese Translation</h2>
+                    <textarea id="translation-editor"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
