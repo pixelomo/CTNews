@@ -56,8 +56,10 @@ class SaveArticleResource(Resource):
         translated_chunks = []
         for chunk in chunks:
             translated_chunk = translate_with_gpt4(chunk)
+            print(f"Translated chunk: {translated_chunk}")  # Debugging
             translated_chunks.append(translated_chunk)
         content_translated = " ".join(translated_chunks)
+        print(f"Full translated content: {content_translated}")  # Debugging
 
         article = Article(
             title=data["title"],
