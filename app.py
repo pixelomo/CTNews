@@ -1,24 +1,41 @@
-from flask import Flask, render_template, request
-from flask_restful import Api, Resource
+from flask import Flask, request, jsonify
+from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 from dateutil.parser import parse
 import os
+from sqlalchemy.exc import IntegrityError
+from flask import render_template
+# from flask_cors import CORS
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# CORS(app, resources={r"/api/*": {"origins": ["https://gentle-earth-02543.herokuapp.com/", "http://127.0.0.1:5000"]}})
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200))
-    pubDate = db.Column(db.DateTime)
-    link = db.Column(db.String(500), unique=True)
-    text = db.Column(db.Text)
-    html = db.Column(db.Text)
-    content_translated = db.Column(db.Text)
+    title = db.Column(db.String, nullable=False)
+    pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    link = db.Column(db.String, nullable=False, unique=True)  # Add unique constraint
+    text = db.Column(db.Text, nullable=True)
+    html = db.Column(db.Text, nullable=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "pubDate": self.pubDate.isoformat(),
+            "link": self.link,
+            "text": self.text,
+            "html": self.html,
+        }
 
 class SaveArticleResource(Resource):
     def post(self):
@@ -31,7 +48,6 @@ class SaveArticleResource(Resource):
             link=data["link"],
             text=data["text"],
             html=data["html"],
-            content_translated=data["content_translated"],
         )
 
         try:
@@ -42,17 +58,13 @@ class SaveArticleResource(Resource):
             db.session.rollback()
             return {"message": "Article with the same link already exists."}, 409
 
+class GetAllArticlesResource(Resource):
+    def get(self):
+        articles = Article.query.all()
+        return jsonify([article.to_dict() for article in articles])
+
 api.add_resource(SaveArticleResource, "/api/save_article")
-
-@app.route("/")
-def index():
-    articles = Article.query.order_by(Article.pubDate.desc()).all()
-    return render_template("index.html", articles=articles)
-
-@app.route("/article/<int:article_id>")
-def article(article_id):
-    article = Article.query.get(article_id)
-    return render_template("article.html", article=article)
+api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
