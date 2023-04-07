@@ -32,8 +32,8 @@ $(document).ready(function () {
     sidebarToggle.addEventListener("click", function () {
         sidebar.classList.toggle("minimized");
         sidebarToggle.textContent = sidebar.classList.contains("minimized")
-        ? "Maximize Sidebar"
-        : "Minimize Sidebar";
+        ? "Show"
+        : "Hide";
     });
 });
 
