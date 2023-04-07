@@ -5,12 +5,18 @@ from datetime import datetime
 from dateutil.parser import parse
 import os
 from sqlalchemy.exc import IntegrityError
+from flask import render_template
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
