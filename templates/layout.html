@@ -8,6 +8,29 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/1k5a6y1ex6opiz5nrh49vrroykppmsm8g61gic03quq57ked/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <style>
+        .container {
+          width: 100%;
+          max-width: 100%;
+        }
+        img{
+            max-width: 100%;
+        }
+        .list-group-item{
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tox-tinymce {
+            height: 100vh !important;
+        }
+        .tox-edit-area {
+            height: calc(100vh - 64px) !important;
+        }
+
+
+      </style>
 </head>
 <body>
     {% block content %}{% endblock %}
