@@ -1,5 +1,6 @@
 from translate import translate_with_gpt
-from app import db, Article
+from app import app, db
+from app.models import Article
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
@@ -41,18 +42,24 @@ class ArticlesPipeline(object):
         print(f"Item content_translated: {item['content_translated']}")  # Debugging
 
         # Save the item to the database
-        article = Article.query.filter_by(url=item['url']).first()
-        if article:
-            article.content_translated = content_translated
-        else:
+        with app.app_context():
             article = Article(
-                title=item['title'],
-                url=item['url'],
-                html=item['html'],
-                content_translated=content_translated
+                title=item["title"],
+                pubDate=item["pubDate"],
+                link=item["link"],
+                text=item["text"],
+                html=item["html"],
+                content_translated=item["content_translated"]
             )
-            db.session.add(article)
 
-        db.session.commit()
+            try:
+                db.session.add(article)
+                db.session.commit()
+                print("Article saved successfully.")
+            except IntegrityError:
+                db.session.rollback()
+                print("Article with the same link already exists.")
+
+        return item
 
         return item
