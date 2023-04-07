@@ -1,6 +1,6 @@
 from translate import translate_with_gpt
 from app import app, db
-from app.models import Article
+from CTNews.models import Article
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
