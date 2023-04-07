@@ -1,4 +1,5 @@
 from translate import translate_with_gpt
+from app import db, Article
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
@@ -40,6 +41,18 @@ class ArticlesPipeline(object):
         print(f"Item content_translated: {item['content_translated']}")  # Debugging
 
         # Save the item to the database
-        # Your existing code to save the item to the database goes here
+        article = Article.query.filter_by(url=item['url']).first()
+        if article:
+            article.content_translated = content_translated
+        else:
+            article = Article(
+                title=item['title'],
+                url=item['url'],
+                html=item['html'],
+                content_translated=content_translated
+            )
+            db.session.add(article)
+
+        db.session.commit()
 
         return item
