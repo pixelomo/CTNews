@@ -26,25 +26,35 @@ $(document).ready(function () {
 
     loadArticles();
 
-    function onSidebarToggleClick() {
-        // Toggle the sidebar
-        const sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("sidebar-hidden");
+    const sidebar = document.querySelector(".sidebar");
+    const sidebarToggle = document.querySelector("#sidebar-toggle");
 
-        // Update the button text
-        const toggleButton = document.querySelector("#sidebar-toggle");
-        toggleButton.textContent = toggleButton.textContent === "Hide" ? "Show" : "Hide";
+    sidebarToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("minimized");
+        sidebarToggle.textContent = sidebar.classList.contains("minimized")
+        ? "Show"
+        : "Hide";
+    });
 
-        // Toggle the width of the other two columns
-        const columns = document.querySelectorAll(".col-md-6");
-        columns.forEach((column) => {
-          column.classList.toggle("two-columns");
-        });
-      }
+    // function onSidebarToggleClick() {
+    //     // Toggle the sidebar
+    //     const sidebar = document.querySelector(".sidebar");
+    //     sidebar.classList.toggle("sidebar-hidden");
 
-    // Attach the onSidebarToggleClick function to the sidebar toggle button's click event
-    const sidebarToggleButton = document.querySelector("#sidebar-toggle");
-    sidebarToggleButton.addEventListener("click", onSidebarToggleClick);
+    //     // Update the button text
+    //     const toggleButton = document.querySelector("#sidebar-toggle");
+    //     toggleButton.textContent = toggleButton.textContent === "Hide" ? "Show" : "Hide";
+
+    //     // Toggle the width of the other two columns
+    //     const columns = document.querySelectorAll(".col-md-6");
+    //     columns.forEach((column) => {
+    //       column.classList.toggle("two-columns");
+    //     });
+    //   }
+
+    // // Attach the onSidebarToggleClick function to the sidebar toggle button's click event
+    // const sidebarToggleButton = document.querySelector("#sidebar-toggle");
+    // sidebarToggleButton.addEventListener("click", onSidebarToggleClick);
 
 
     function onArticleClick(event) {
