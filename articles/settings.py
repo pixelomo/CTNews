@@ -7,3 +7,6 @@ NEWSPIDER_MODULE = 'articles.spiders'
 
 ROBOTSTXT_OBEY = True
 HTTPCACHE_ENABLED = True
+ITEM_PIPELINES = {
+    'articles.pipelines.ArticlesPipeline': 300,
+}
