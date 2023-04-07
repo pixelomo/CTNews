@@ -6,6 +6,7 @@ from dateutil.parser import parse
 import os
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
+from translate import translate_with_gpt4
 # from flask_cors import CORS
 
 app = Flask(__name__)
@@ -45,17 +46,32 @@ class SaveArticleResource(Resource):
     def post(self):
         data = request.get_json()
         pubDate = parse(data["pubDate"])
+        article_text = data["text"]
+        max_tokens = 2048  # Adjust based on the model limit
+
+        # Split the text into chunks
+        chunks = split_text(article_text, max_tokens)
+
+        # Translate each chunk and join them together
+        translated_chunks = []
+        for chunk in chunks:
+            translated_chunk = translate_with_gpt4(chunk)
+            translated_chunks.append(translated_chunk)
+        content_translated = " ".join(translated_chunks)
+
         article = Article(
             title=data["title"],
             pubDate=pubDate,
             link=data["link"],
             text=data["text"],
-            html=data["html"]
+            html=data["html"],
+            content_translated=content_translated,
         )
+
         try:
             db.session.add(article)
             db.session.commit()
-            return {"message": "Article saved successfully."}
+            return {"message": "Article saved and translated successfully."}
         except IntegrityError:
             db.session.rollback()
             return {"message": "Article with the same link already exists."}, 409
