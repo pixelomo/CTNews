@@ -12,6 +12,9 @@
         .container {
           width: 100%;
           max-width: 100%;
+          background: #222;
+          color: #fff;
+          padding-top: 0.5rem;
         }
         img{
             max-width: 100%;
@@ -30,12 +33,12 @@
         }
         .sidebar-toggle {
             position: absolute;
-            right: 0;
-            top: 0;
-            background-color: #ccc;
+            left: 11rem;
+            top: 4px;
             border: none;
             padding: 5px 10px;
             cursor: pointer;
+            border-radius: 5px;
         }
 
         .sidebar{
@@ -43,6 +46,7 @@
             height: 100vh;
             overflow-y: auto;
             overflow-x: hidden;
+            padding: 0;
         }
 
         .sidebar.minimized {
@@ -50,10 +54,24 @@
             overflow: hidden;
         }
 
+        .sidebar-hidden {
+            display: none;
+        }
+
+        .two-columns {
+            width: 50%;
+        }
+
         .sidebar.minimized .sidebar-title,
         .sidebar.minimized .article-link {
             display: none;
         }
+        h2{font-size: 1.5rem;}
+        .selected-article {
+            background-color: #cae1ff;
+            border-left: 4px solid #007bff;
+        }
+
 
       </style>
 </head>
