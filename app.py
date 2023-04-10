@@ -21,7 +21,7 @@ class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    link = db.Column(db.String, nullable=False, unique=True)  # Add unique constraint
+    link = db.Column(db.String, nullable=False, unique=True)
     text = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
