@@ -6,10 +6,8 @@ from dateutil.parser import parse
 import os
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
-# from flask_cors import CORS
 
 app = Flask(__name__)
-# CORS(app, resources={r"/api/*": {"origins": ["https://gentle-earth-02543.herokuapp.com/", "http://127.0.0.1:5000"]}})
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -26,6 +24,7 @@ class Article(db.Model):
     link = db.Column(db.String, nullable=False, unique=True)  # Add unique constraint
     text = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
+    content_translated = db.Column(db.Text, nullable=True)
 
     def to_dict(self):
         return {
@@ -35,6 +34,7 @@ class Article(db.Model):
             "link": self.link,
             "text": self.text,
             "html": self.html,
+            "content_translated": self.content_translated,
         }
 
 class SaveArticleResource(Resource):
@@ -48,6 +48,7 @@ class SaveArticleResource(Resource):
             link=data["link"],
             text=data["text"],
             html=data["html"],
+            content_translated=data["content_translated"]
         )
 
         try:

@@ -1,9 +1,5 @@
 from translate import translate_with_gpt
-from app import app, db
-import sys
-sys.path.append('..')  # Adds the root directory to the system path
-
-from models import Article
+from app import app, db, Article
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
