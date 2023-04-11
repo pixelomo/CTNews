@@ -5,6 +5,23 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+def chunk_text(text, max_chunk_size):
+    words = text.split()
+    chunks = []
+    current_chunk = []
+
+    for word in words:
+        if len(" ".join(current_chunk) + " " + word) <= max_chunk_size:
+            current_chunk.append(word)
+        else:
+            chunks.append(" ".join(current_chunk))
+            current_chunk = [word]
+
+    if current_chunk:
+        chunks.append(" ".join(current_chunk))
+
+    return chunks
+
 def translate_with_gpt_chat(text, target_language="Japanese"):
     try:
         briefing = (
@@ -35,26 +52,34 @@ def translate_with_gpt_chat(text, target_language="Japanese"):
             "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
             "以下の記事を上記の条件を守りながら和訳してください。"
         )
-        prompt = f"Translate the following English text to {target_language}:\n{text}"
+        max_chunk_size = 4096 - len(briefing)  # Adjust the maximum chunk size based on the briefing text length
+        chunks = chunk_text(text, max_chunk_size)
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": briefing},
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=2048,
-            temperature=0.2,
-            n=1,
-        )
+        translated_chunks = []
+        for chunk in chunks:
+            prompt = f"Translate the following English text to {target_language}:\n{chunk}"
 
-        translated_text = response.choices[0].text.strip()
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": briefing},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=2048,
+                temperature=0.2,
+                n=1,
+            )
+
+            translated_text = response.choices[0].text.strip()
+            translated_chunks.append(translated_text)
+
+        full_translation = " ".join(translated_chunks)
 
         # Print debugging information
         print(f"Original Text: {text}")
-        print(f"Translated Text: {translated_text}")
+        print(f"Translated Text: {full_translation}")
 
-        return translated_text
+        return full_translation
 
     except Exception as e:
         print(f"Error during translation: {e}")
