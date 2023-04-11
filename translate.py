@@ -22,7 +22,7 @@ def chunk_text(text, max_chunk_size):
 
     return chunks
 
-def translate_with_gpt_chat(text, target_language="Japanese"):
+def translate_with_gpt(text, target_language="Japanese"):
     try:
         briefing = (
             "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
