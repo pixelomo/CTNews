@@ -15,10 +15,10 @@ $(document).ready(function () {
                     .text(article.title)
                     .data("article", article)
                     .on("click", function (event) {
-                        // Call the onArticleClick function and pass the event
                         onArticleClick(event);
 
                         $("#original-html").html(article.html);
+                        console.log(article.content_translated)
                         tinymce.get("translation-editor").setContent(article.content_translated || '');
                     })
                     .appendTo("#article-list");
