@@ -52,7 +52,7 @@ def translate_with_gpt_chat(text, target_language="Japanese"):
             "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
             "以下の記事を上記の条件を守りながら和訳してください。"
         )
-        max_chunk_size = 4096 - len(briefing)  # Adjust the maximum chunk size based on the briefing text length
+        max_chunk_size = 4096 - len(briefing)
         chunks = chunk_text(text, max_chunk_size)
 
         translated_chunks = []
