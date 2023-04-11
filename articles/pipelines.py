@@ -3,16 +3,18 @@ from app import app, db, Article
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
-        words = text.split()
+        import re
+
+        sentences = re.split(r'(?<=[\.\?\!])\s+', text)
         chunks = []
         current_chunk = []
 
-        for word in words:
-            current_chunk.append(word)
+        for sentence in sentences:
+            current_chunk.append(sentence)
             if len(" ".join(current_chunk)) > max_tokens:
-                current_chunk.pop()  # Remove the last word that caused the overflow
+                current_chunk.pop()  # Remove the last sentence that caused the overflow
                 chunks.append(" ".join(current_chunk))
-                current_chunk = [word]
+                current_chunk = [sentence]
 
         if current_chunk:
             chunks.append(" ".join(current_chunk))
@@ -60,5 +62,3 @@ class ArticlesPipeline(object):
                 print("Article with the same link already exists.")
 
         return item
-
-
