@@ -1,28 +1,12 @@
 import openai
 import os
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def chunk_text(text, max_chunk_size):
-    words = text.split()
-    chunks = []
-    current_chunk = []
-
-    for word in words:
-        if len(" ".join(current_chunk) + " " + word) <= max_chunk_size:
-            current_chunk.append(word)
-        else:
-            chunks.append(" ".join(current_chunk))
-            current_chunk = [word]
-
-    if current_chunk:
-        chunks.append(" ".join(current_chunk))
-
-    return chunks
-
-def translate_with_gpt(text, target_language="Japanese"):
+def translate_with_gpt(text, title, target_language="Japanese"):
     try:
         briefing = (
             "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
@@ -52,35 +36,33 @@ def translate_with_gpt(text, target_language="Japanese"):
             "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
             "以下の記事を上記の条件を守りながら和訳してください。"
         )
-        max_chunk_size = 4096 - len(briefing)
-        chunks = chunk_text(text, max_chunk_size)
 
-        translated_chunks = []
-        for chunk in chunks:
-            prompt = f"Translate the following English text to {target_language}:\n{chunk}"
+        prompt = f"Translate the following English text to {target_language}:\nTitle: {title}\n\n{text}"
 
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": briefing},
-                    {"role": "user", "content": prompt},
-                ],
-                max_tokens=2048,
-                temperature=0.2,
-                n=1,
-            )
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": briefing},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=2048,
+            temperature=0.2,
+            n=1,
+        )
 
-            translated_text = response.choices[0].text.strip()
-            translated_chunks.append(translated_text)
-
-        full_translation = " ".join(translated_chunks)
+        translated_text = response.choices[0].text.strip()
 
         # Print debugging information
         print(f"Original Text: {text}")
-        print(f"Translated Text: {full_translation}")
+        print(f"Translated Text: {translated_text}")
 
-        return full_translation
+        # Process the translated text with BeautifulSoup
+        soup = BeautifulSoup(translated_text, "html.parser")
+        formatted_translated_text = soup.prettify()
+
+        return formatted_translated_text
 
     except Exception as e:
         print(f"Error during translation: {e}")
         return None
+
