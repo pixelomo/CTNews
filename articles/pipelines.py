@@ -23,11 +23,11 @@ class ArticlesPipeline(object):
 
         return chunks
 
-    def translate_html(self, html, max_tokens):
+    def translate_html(self, html, max_tokens, translated_title):
         soup = BeautifulSoup(html, "html.parser")
-        tags_to_translate = ["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "a"]
+        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
-        for element in soup.find_all(tags_to_translate):
+        for element in paragraphs:
             original_text = element.get_text()
             chunks = self.split_text(original_text, max_tokens)
             translated_chunks = []
@@ -46,21 +46,27 @@ class ArticlesPipeline(object):
             if translated_text:
                 new_tag = soup.new_tag(element.name)
                 new_tag.string = translated_text
-                for attr, value in element.attrs.items():
-                    new_tag[attr] = value
                 element.replace_with(new_tag)
+
+        h3_tag = soup.new_tag("h3")
+        h3_tag.string = translated_title
+        soup.body.insert(0, h3_tag)
 
         return str(soup)
 
-    def process_item(self, item, spider):
-        article_html = item["html"]
-        max_tokens = 2000  # Adjust based on the model limit
 
-        # Translate the HTML
-        translated_html = self.translate_html(article_html, max_tokens)
+    def process_item(self, item, spider):
+        article_text = item["text"]
+        max_tokens = 2048  # Adjust based on the model limit
+
+        # Translate the title
+        translated_title = translate_with_gpt(item["title"])
+
+        # Translate the HTML content
+        content_translated = self.translate_html(item["html"], max_tokens, translated_title)
 
         # Save the translated content in the item
-        item["content_translated"] = translated_html
+        item["content_translated"] = content_translated
 
         # Save the item to the database
         with app.app_context():
@@ -82,3 +88,4 @@ class ArticlesPipeline(object):
                 print("Article with the same link already exists.")
 
         return item
+
