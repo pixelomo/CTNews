@@ -2,8 +2,9 @@ $(document).ready(function () {
     tinymce.init({
         selector: "#translation-editor",
         height: '100vh',
-        plugins: 'anchor autolink charmap codesample image link lists media searchreplace table wordcount',
-        toolbar: 'undo redo | fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat',
+        plugins: 'anchor autolink code charmap codesample image link lists media searchreplace table wordcount',
+        toolbar: 'undo redo | fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat | code',
+        menubar: 'tools',
         content_style: 'img { max-width: 100% !important; } .mce-content-body { padding-bottom: 6rem !important; }'
     });
 
@@ -29,36 +30,15 @@ $(document).ready(function () {
 
     loadArticles();
 
-    const sidebar = document.querySelector(".sidebar");
-    const sidebarToggle = document.querySelector("#sidebar-toggle");
+    // const sidebar = document.querySelector(".sidebar");
+    // const sidebarToggle = document.querySelector("#sidebar-toggle");
 
-    sidebarToggle.addEventListener("click", function () {
-        sidebar.classList.toggle("minimized");
-        sidebarToggle.textContent = sidebar.classList.contains("minimized")
-        ? "Show"
-        : "Hide";
-    });
-
-    // function onSidebarToggleClick() {
-    //     // Toggle the sidebar
-    //     const sidebar = document.querySelector(".sidebar");
-    //     sidebar.classList.toggle("sidebar-hidden");
-
-    //     // Update the button text
-    //     const toggleButton = document.querySelector("#sidebar-toggle");
-    //     toggleButton.textContent = toggleButton.textContent === "Hide" ? "Show" : "Hide";
-
-    //     // Toggle the width of the other two columns
-    //     const columns = document.querySelectorAll(".col-md-6");
-    //     columns.forEach((column) => {
-    //       column.classList.toggle("two-columns");
-    //     });
-    //   }
-
-    // // Attach the onSidebarToggleClick function to the sidebar toggle button's click event
-    // const sidebarToggleButton = document.querySelector("#sidebar-toggle");
-    // sidebarToggleButton.addEventListener("click", onSidebarToggleClick);
-
+    // sidebarToggle.addEventListener("click", function () {
+    //     sidebar.classList.toggle("minimized");
+    //     sidebarToggle.textContent = sidebar.classList.contains("minimized")
+    //     ? "Show"
+    //     : "Hide";
+    // });
 
     function onArticleClick(event) {
         // Remove the selected-article class from the previously selected article
