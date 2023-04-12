@@ -25,10 +25,10 @@ class ArticlesPipeline(object):
 
     def translate_html(self, html, max_tokens):
         soup = BeautifulSoup(html, "html.parser")
-        paragraphs = soup.find_all("p")
+        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
-        for paragraph in paragraphs:
-            original_text = paragraph.get_text()
+        for element in paragraphs:
+            original_text = element.get_text()
             chunks = self.split_text(original_text, max_tokens)
             translated_chunks = []
 
@@ -42,7 +42,11 @@ class ArticlesPipeline(object):
                 except Exception as e:
                     print(f"Error translating chunk: {chunk}. Error: {e}")
 
-            paragraph.string.replace_with(" ".join(translated_chunks))
+            translated_text = " ".join(translated_chunks)
+            if translated_text:
+                new_tag = soup.new_tag(element.name)
+                new_tag.string = translated_text
+                element.replace_with(new_tag)
 
         return str(soup)
 
