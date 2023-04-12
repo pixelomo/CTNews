@@ -36,6 +36,8 @@ def translate_with_gpt(text, target_language="Japanese"):
             "以下の記事を上記の条件を守りながら和訳してください。\n"
         )
         prompt = f"Translate the following English text to {target_language}:\n{text}"
+        print("Text to translate:", text)
+        print("Target language:", target_language)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -48,12 +50,14 @@ def translate_with_gpt(text, target_language="Japanese"):
             n=1,
         )
 
-        translated_text = response.choices[0].text.strip()
+        print(response)
+
+        translated_text = response.choices[0].message.content.strip()  # Update this line
         # Add additional print statements for debugging
         print("Response object:", response)
         print("Choices object:", response.choices)
         print("Choice object:", response.choices[0])
-        print("Text attribute:", response.choices[0].text)
+        print("Content attribute:", response.choices[0].message.content)
 
         # Print debugging information
         print(f"Original Text: {text}")
@@ -61,6 +65,16 @@ def translate_with_gpt(text, target_language="Japanese"):
 
         return translated_text
 
-    except Exception as e:
-        print(f"Error during translation: {e}")
+    # except Exception as e:
+    #     print(f"Error during API request: {e}")
+    #     return None
+
+    except openai.OpenAIError as e:
+        print(f"Error during API request: {e}")
         return None
+
+# Example usage
+if __name__ == "__main__":
+    text = "This is an example text to be translated."
+    translated_text = translate_with_gpt(text)
+    print(f"Final translated text: {translated_text}")
