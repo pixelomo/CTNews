@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
+import json
+import os
+from flask import Flask, request, jsonify, send_from_directory
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dateutil.parser import parse
-import json
-import os
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
 
@@ -33,7 +33,6 @@ def load_dummy_data():
 
     return data
 
-
 @app.route('/api/get_dummy_data')
 def get_dummy_data():
     if os.environ.get('FLASK_ENV') == 'development':
@@ -44,6 +43,10 @@ def get_dummy_data():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
