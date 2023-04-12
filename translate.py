@@ -5,23 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def chunk_text(text, max_chunk_size):
-    words = text.split()
-    chunks = []
-    current_chunk = []
-
-    for word in words:
-        if len(" ".join(current_chunk) + " " + word) <= max_chunk_size:
-            current_chunk.append(word)
-        else:
-            chunks.append(" ".join(current_chunk))
-            current_chunk = [word]
-
-    if current_chunk:
-        chunks.append(" ".join(current_chunk))
-
-    return chunks
-
 def translate_with_gpt(text, target_language="Japanese"):
     try:
         briefing = (
@@ -50,36 +33,28 @@ def translate_with_gpt(text, target_language="Japanese"):
             "・STABLECOINは安定コインではなく、ステーブルコインと訳す\n"
             "・鍵括弧は全角でなく半角にしてください。\n"
             "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
-            "以下の記事を上記の条件を守りながら和訳してください。"
+            "以下の記事を上記の条件を守りながら和訳してください。\n"
         )
-        max_chunk_size = 4096 - len(briefing)
-        chunks = chunk_text(text, max_chunk_size)
+        prompt = f"Translate the following English text to {target_language}:\n{text}"
 
-        translated_chunks = []
-        for chunk in chunks:
-            prompt = f"Translate the following English text to {target_language}:\n{chunk}"
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": briefing},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=2048,
+            temperature=0.2,
+            n=1,
+        )
 
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": briefing},
-                    {"role": "user", "content": prompt},
-                ],
-                max_tokens=2048,
-                temperature=0.2,
-                n=1,
-            )
-
-            translated_text = response.choices[0].text.strip()
-            translated_chunks.append(translated_text)
-
-        full_translation = " ".join(translated_chunks)
+        translated_text = response.choices[0].text.strip()
 
         # Print debugging information
         print(f"Original Text: {text}")
         print(f"Translated Text: {translated_text}")
 
-        return full_translation
+        return translated_text
 
     except Exception as e:
         print(f"Error during translation: {e}")
