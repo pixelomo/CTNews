@@ -45,7 +45,7 @@ def translate_with_gpt(text, target_language="Japanese"):
                 {"role": "system", "content": briefing},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=2048,
+            max_tokens=2000,
             temperature=0.2,
             n=1,
         )
