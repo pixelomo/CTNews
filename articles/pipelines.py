@@ -44,14 +44,11 @@ class ArticlesPipeline(object):
 
             translated_text = " ".join(translated_chunks)
             if translated_text:
-                if element.name == 'a':
-                    element.string.replace_with(translated_text)
-                else:
-                    new_tag = soup.new_tag(element.name)
-                    new_tag.string = translated_text
-                    for attr, value in element.attrs.items():
-                        new_tag[attr] = value
-                    element.replace_with(new_tag)
+                new_tag = soup.new_tag(element.name)
+                new_tag.string = translated_text
+                for attr, value in element.attrs.items():
+                    new_tag[attr] = value
+                element.replace_with(new_tag)
 
         return str(soup)
 
