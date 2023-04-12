@@ -4,12 +4,23 @@ $(document).ready(function () {
         height: '100vh',
         plugins: 'anchor autolink code charmap codesample image link lists media searchreplace table wordcount',
         toolbar: 'undo redo | fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat | code',
-        menubar: 'tools',
-        content_style: 'img { max-width: 100% !important; } .mce-content-body { padding-bottom: 6rem !important; }'
+        content_style: 'img { max-width: 100% !important; } .mce-content-body { padding-bottom: 6rem !important; }',
+        init_instance_callback: function (editor) {
+            syncTinyMCEScroll(editor);
+        },
     });
 
     function loadArticles() {
-        $.getJSON("/api/get_all_articles", function (data) {
+        // Use the appropriate route based on the environment
+        var articlesRoute = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+            ? "/api/get_dummy_data"
+            : "/api/get_all_articles";
+
+        $.getJSON(articlesRoute, function (data) {
+            if (!Array.isArray(data)) {
+                data = [data];
+            }
+
             $("#article-list").empty();
             data.forEach(function (article) {
                 $("<li>")
@@ -53,45 +64,35 @@ $(document).ready(function () {
         }
     }
 
+    function syncTinyMCEScroll(editor) {
+        var syncScrolling = false;
+        var originalScrollContainer = $(".scroll-container").not(".tox-edit-area__iframe").get(0);
+        var iframeWindow = editor.getWin();
+        var iframeBody = editor.getBody();
+
+        iframeWindow.addEventListener("scroll", function () {
+          if (!syncScrolling) {
+            syncScrolling = true;
+            originalScrollContainer.scrollTop = iframeWindow.pageYOffset;
+            syncScrolling = false;
+          }
+        });
+
+        $(originalScrollContainer).scroll(function () {
+          if (!syncScrolling) {
+            syncScrolling = true;
+            iframeWindow.scrollTo(0, originalScrollContainer.scrollTop);
+            syncScrolling = false;
+          }
+        });
+
+        // Trigger the scroll synchronization after the content is loaded into the TinyMCE editor
+        editor.on('LoadContent', function () {
+          setTimeout(function () {
+            originalScrollContainer.scrollTop = iframeBody.scrollTop;
+          }, 100);
+        });
+    }
+
 
 });
-
-
-// tinymce.init({
-//     selector: 'textarea',
-//     plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-//     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-//   });
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     // Initialize TinyMCE editor
-//     tinymce.init({
-//       selector: '#translated-content',
-//       plugins: 'anchor autolink charmap codesample image link lists media searchreplace table visualblocks wordcount',
-//       toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat',
-//       setup: function (editor) {
-//         editor.on('init', function () {
-//           // Fetch the article data from your API
-//           fetch('/api/get_all_articles')
-//             .then((response) => response.json())
-//             .then((articles) => {
-//               // Display the original content and set the translated content in the TinyMCE editor
-//               if (articles.length > 0) {
-//                 const article = articles[0]; // Replace this with the article you want to display
-//                 displayArticle(article); // Assumes you have a function called `displayArticle` that displays the original content
-//                 editor.setContent(article.content_translated || ''); // Set the translated content in the TinyMCE editor
-//               }
-//             });
-//         });
-//       },
-//     });
-
-//     // Function to display the original content of the article
-//     function displayArticle(article) {
-//       // Assumes you have an element with the ID 'original-content' for displaying the original content
-//       const originalContentElement = document.getElementById('original-content');
-//       if (originalContentElement) {
-//         originalContentElement.innerHTML = article.html || '';
-//       }
-//     }
-//   });

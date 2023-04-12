@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dateutil.parser import parse
+import json
 import os
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
@@ -12,6 +13,33 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///arti
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
+
+def load_dummy_data():
+    with open('dummy_data.json', 'r') as file:
+        raw_data = json.load(file)
+
+    data = []
+    for article in raw_data["values"]:
+        formatted_article = {
+            "id": article[0],
+            "title": article[1],
+            "pubDate": article[2],
+            "link": article[3],
+            "text": article[4],
+            "html": article[5],
+            "content_translated": article[6]
+        }
+        data.append(formatted_article)
+
+    return data
+
+
+@app.route('/api/get_dummy_data')
+def get_dummy_data():
+    if os.environ.get('FLASK_ENV') == 'development':
+        return jsonify(load_dummy_data())
+    else:
+        return jsonify({"error": "Dummy data is only available in development environment"})
 
 @app.route('/')
 def index():
@@ -67,5 +95,7 @@ class GetAllArticlesResource(Resource):
 api.add_resource(SaveArticleResource, "/api/save_article")
 api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    if os.environ.get('FLASK_ENV') == 'development':
+        dummy_data = load_dummy_data()
+    app.run()
