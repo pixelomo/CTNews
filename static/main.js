@@ -4,7 +4,7 @@ $(document).ready(function () {
         height: '100vh',
         plugins: 'anchor autolink charmap codesample image link lists media searchreplace table wordcount',
         toolbar: 'undo redo | fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat',
-        content_style: '.mce-content-body { padding-bottom: 6rem }'
+        content_style: 'img { max-width: 100% !important; } .mce-content-body { padding-bottom: 6rem !important; }'
     });
 
     function loadArticles() {
