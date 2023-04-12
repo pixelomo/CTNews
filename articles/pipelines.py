@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from translate import translate_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
@@ -22,32 +23,38 @@ class ArticlesPipeline(object):
 
         return chunks
 
+    def translate_html(self, html, max_tokens):
+        soup = BeautifulSoup(html, "html.parser")
+        paragraphs = soup.find_all("p")
+
+        for paragraph in paragraphs:
+            original_text = paragraph.get_text()
+            chunks = self.split_text(original_text, max_tokens)
+            translated_chunks = []
+
+            for chunk in chunks:
+                try:
+                    translated_chunk = translate_with_gpt(chunk)
+                    if translated_chunk is not None and translated_chunk.strip():
+                        translated_chunks.append(translated_chunk)
+                    else:
+                        print(f"Empty translated chunk for original chunk: {chunk}")
+                except Exception as e:
+                    print(f"Error translating chunk: {chunk}. Error: {e}")
+
+            paragraph.string.replace_with(" ".join(translated_chunks))
+
+        return str(soup)
+
     def process_item(self, item, spider):
-        article_text = item["text"]
+        article_html = item["html"]
         max_tokens = 2000  # Adjust based on the model limit
 
-        # Split the text into chunks
-        chunks = self.split_text(article_text, max_tokens)
-        print(f"Chunks: {chunks}")  # Debugging
-
-        # Translate each chunk and join them together
-        translated_chunks = []
-        for chunk in chunks:
-            try:
-                translated_chunk = translate_with_gpt(chunk)
-                if translated_chunk is not None and translated_chunk.strip():
-                    translated_chunks.append(translated_chunk)
-                else:
-                    print(f"Empty translated chunk for original chunk: {chunk}")
-            except Exception as e:
-                print(f"Error translating chunk: {chunk}. Error: {e}")
-
-        content_translated = " ".join(translated_chunks)
-        print(f"Full translated content: {content_translated}")  # Debugging
+        # Translate the HTML
+        translated_html = self.translate_html(article_html, max_tokens)
 
         # Save the translated content in the item
-        item["content_translated"] = content_translated
-        print(f"Item content_translated: {item['content_translated']}")  # Debugging
+        item["content_translated"] = translated_html
 
         # Save the item to the database
         with app.app_context():

@@ -17,8 +17,8 @@ $(document).ready(function () {
                     .on("click", function (event) {
                         onArticleClick(event);
 
+                        $("#original-title").html(article.title);
                         $("#original-html").html(article.html);
-                        console.log(article.content_translated)
                         tinymce.get("translation-editor").setContent(article.content_translated || '');
                     })
                     .appendTo("#article-list");
