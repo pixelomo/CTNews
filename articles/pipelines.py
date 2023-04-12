@@ -36,6 +36,7 @@ class ArticlesPipeline(object):
                 try:
                     translated_chunk = translate_with_gpt(chunk)
                     if translated_chunk is not None and translated_chunk.strip():
+                        translated_chunk = translated_chunk.replace("翻訳・編集　コインテレグラフジャパン", "")
                         translated_chunks.append(translated_chunk)
                     else:
                         print(f"Empty translated chunk for original chunk: {chunk}")
@@ -50,9 +51,13 @@ class ArticlesPipeline(object):
 
         h3_tag = soup.new_tag("h3")
         h3_tag.string = translated_title
-        soup.body.insert(0, h3_tag)
+
+        first_suitable_tag = soup.body.find(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
+        if first_suitable_tag:
+            first_suitable_tag.insert_before(h3_tag)
 
         return str(soup)
+
 
 
     def process_item(self, item, spider):
