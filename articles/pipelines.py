@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 from translate import translate_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
@@ -25,9 +25,9 @@ class ArticlesPipeline(object):
 
     def translate_html(self, html, max_tokens):
         soup = BeautifulSoup(html, "html.parser")
-        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
+        tags_to_translate = ["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "a"]
 
-        for element in paragraphs:
+        for element in soup.find_all(tags_to_translate):
             original_text = element.get_text()
             chunks = self.split_text(original_text, max_tokens)
             translated_chunks = []
@@ -44,9 +44,14 @@ class ArticlesPipeline(object):
 
             translated_text = " ".join(translated_chunks)
             if translated_text:
-                new_tag = soup.new_tag(element.name)
-                new_tag.string = translated_text
-                element.replace_with(new_tag)
+                if element.name == 'a':
+                    element.string.replace_with(translated_text)
+                else:
+                    new_tag = soup.new_tag(element.name)
+                    new_tag.string = translated_text
+                    for attr, value in element.attrs.items():
+                        new_tag[attr] = value
+                    element.replace_with(new_tag)
 
         return str(soup)
 
