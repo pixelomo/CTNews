@@ -49,6 +49,11 @@ def translate_with_gpt(text, target_language="Japanese"):
         )
 
         translated_text = response.choices[0].text.strip()
+        # Add additional print statements for debugging
+        print("Response object:", response)
+        print("Choices object:", response.choices)
+        print("Choice object:", response.choices[0])
+        print("Text attribute:", response.choices[0].text)
 
         # Print debugging information
         print(f"Original Text: {text}")
