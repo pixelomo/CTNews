@@ -58,8 +58,6 @@ class ArticlesPipeline(object):
 
         return str(soup)
 
-
-
     def process_item(self, item, spider):
         article_text = item["text"]
         max_tokens = 2048  # Adjust based on the model limit
@@ -94,10 +92,3 @@ class ArticlesPipeline(object):
 
         return item
 
-if __name__ == "__main__":
-    from scrapy.crawler import CrawlerProcess
-    from scrapy.utils.project import get_project_settings
-
-    process = CrawlerProcess(get_project_settings())
-    process.crawl('articles')
-    process.start()

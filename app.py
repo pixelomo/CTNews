@@ -7,6 +7,8 @@ from datetime import datetime
 from dateutil.parser import parse
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
@@ -79,7 +81,8 @@ class SaveArticleResource(Resource):
             link=data["link"],
             text=data["text"],
             html=data["html"],
-            content_translated=data["content_translated"]
+            # Use get method with a default value - prevent the KeyError and handle cases where the key is missing.
+            content_translated=data.get("content_translated", "")
         )
 
         try:
@@ -97,6 +100,16 @@ class GetAllArticlesResource(Resource):
 
 api.add_resource(SaveArticleResource, "/api/save_article")
 api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
+
+def run_spider():
+    process = CrawlerProcess(get_project_settings())
+    process.crawl('articles')
+    process.start()
+
+
+@app.before_first_request
+def start_spider_on_deploy():
+    run_spider()
 
 if __name__ == '__main__':
     if os.environ.get('FLASK_ENV') == 'development':
