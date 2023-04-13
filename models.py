@@ -21,3 +21,4 @@ engine = create_engine('sqlite:///articles.db')
 Base.metadata.create_all(engine)
 
 db_session = scoped_session(sessionmaker(bind=engine))
+db = db_session()
