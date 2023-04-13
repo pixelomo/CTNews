@@ -86,18 +86,18 @@ class Article(db.Model):
             "content_translated": self.content_translated,
         }
 
-class SaveArticleResource(Resource):
-    def post(self):
-        data = request.get_json()
-        save_article_task = save_article.delay(data)
-        return {"task_id": save_article_task.id}
+# class SaveArticleResource(Resource):
+#     def post(self):
+#         data = request.get_json()
+#         save_article_task = save_article.delay(data)
+#         return {"task_id": save_article_task.id}
 
 class GetAllArticlesResource(Resource):
     def get(self):
         articles = Article.query.all()
         return jsonify([article.to_dict() for article in articles])
 
-api.add_resource(SaveArticleResource, "/api/save_article")
+# api.add_resource(SaveArticleResource, "/api/save_article")
 api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
 
 def run_spider():

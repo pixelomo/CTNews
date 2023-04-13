@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup, NavigableString
-from translate import translate_with_gpt
+from translation_tasks import perform_translation
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
+from celery_config import app as celery_app
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
@@ -70,10 +71,12 @@ class ArticlesPipeline(object):
         max_tokens = 2048  # Adjust based on the model limit
 
         # Translate the title
-        translated_title = translate_with_gpt(item["title"])
+        translation_task_title = perform_translation.delay(item["title"], "en")
+        translated_title = celery_app.AsyncResult(translation_task_title.id).get()
 
         # Translate the HTML content
-        content_translated = self.translate_html(item["html"], max_tokens, translated_title)
+        translation_task_html = perform_translation.delay(item["html"], "en")
+        content_translated = celery_app.AsyncResult(translation_task_html.id).get()
 
         # Save the translated content in the item
         item["content_translated"] = content_translated
