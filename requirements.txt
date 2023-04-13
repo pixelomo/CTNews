@@ -39,3 +39,5 @@ python-dotenv==0.19.1
 Scrapy
 gunicorn
 beautifulsoup4==4.10.0
+celery==5.2.1
+redis==4.1.4

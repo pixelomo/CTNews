@@ -3,6 +3,8 @@ import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
+from translation_tasks import perform_translation
+from celery_config import app as celery_app
 from datetime import datetime
 from dateutil.parser import parse
 from sqlalchemy.exc import IntegrityError
@@ -15,6 +17,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///arti
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
+
+@app.route('/api/translate', methods=['POST'])
+def translate():
+    text = request.form.get('text')
+    target_language = request.form.get('target_language')
+
+    translation_task = perform_translation.delay(text, target_language)
+    return jsonify({"task_id": translation_task.id})
+
+@app.route('/api/translate_status/<task_id>', methods=['GET'])
+def translate_status(task_id):
+    task = celery_app.AsyncResult(task_id)
+    return jsonify({"status": task.status, "result": task.result})
 
 def load_dummy_data():
     with open('dummy_data.json', 'r') as file:
@@ -34,6 +49,7 @@ def load_dummy_data():
         data.append(formatted_article)
 
     return data
+
 
 @app.route('/api/get_dummy_data')
 def get_dummy_data():
@@ -112,4 +128,4 @@ def start_spider_on_deploy():
 if __name__ == '__main__':
     if os.environ.get('FLASK_ENV') == 'development':
         dummy_data = load_dummy_data()
-    app.run()
+    app.run(debug=True)
