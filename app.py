@@ -11,7 +11,6 @@ from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from tasks import save_article
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
