@@ -85,12 +85,6 @@ class Article(db.Model):
             "content_translated": self.content_translated,
         }
 
-# class SaveArticleResource(Resource):
-#     def post(self):
-#         data = request.get_json()
-#         save_article_task = save_article.delay(data)
-#         return {"task_id": save_article_task.id}
-
 class GetAllArticlesResource(Resource):
     def get(self):
         articles = Article.query.all()
