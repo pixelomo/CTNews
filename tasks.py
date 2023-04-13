@@ -1,7 +1,7 @@
-from celery import shared_task
-from models import db, Article
-from dateutil.parser import parse
-from sqlalchemy.exc import IntegrityError
+# from celery import shared_task
+# from models import db, Article
+# from dateutil.parser import parse
+# from sqlalchemy.exc import IntegrityError
 
 # @shared_task
 # def save_article(data):
