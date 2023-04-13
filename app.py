@@ -11,6 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+from tasks import save_article
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
@@ -50,7 +51,6 @@ def load_dummy_data():
 
     return data
 
-
 @app.route('/api/get_dummy_data')
 def get_dummy_data():
     if os.environ.get('FLASK_ENV') == 'development':
@@ -89,24 +89,8 @@ class Article(db.Model):
 class SaveArticleResource(Resource):
     def post(self):
         data = request.get_json()
-        pubDate = parse(data["pubDate"])
-
-        article = Article(
-            title=data["title"],
-            pubDate=pubDate,
-            link=data["link"],
-            text=data["text"],
-            html=data["html"],
-            content_translated=data.get("content_translated", "")
-        )
-
-        try:
-            db.session.add(article)
-            db.session.commit()
-            return {"message": "Article saved successfully."}
-        except IntegrityError:
-            db.session.rollback()
-            return {"message": "Article with the same link already exists."}, 409
+        save_article_task = save_article.delay(data)
+        return {"task_id": save_article_task.id}
 
 class GetAllArticlesResource(Resource):
     def get(self):
