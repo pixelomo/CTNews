@@ -1,6 +1,4 @@
 import scrapy
-import requests
-from requests.exceptions import RequestException
 from articles.items import Article
 
 class ArticlesSpider(scrapy.Spider):
@@ -26,18 +24,6 @@ class ArticlesSpider(scrapy.Spider):
         scraped_pubDate = response.meta["pubDate"]
         scraped_html = response.css(".post-content").get()
         scraped_text = "".join(response.css(".post-content *::text").getall())
-
-        api_url = "https://gentle-earth-02543.herokuapp.com/api/save_article"
-        try:
-            requests.post(api_url, json={
-                "title": scraped_title,
-                "pubDate": scraped_pubDate,
-                "link": scraped_link,
-                "text": scraped_text,
-                "html": scraped_html
-            })
-        except RequestException as e:
-            self.logger.error(f"Error sending data to the API: {e}")
 
         yield {
             "title": scraped_title,

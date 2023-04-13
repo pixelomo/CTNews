@@ -18,7 +18,6 @@ celery_config.py
 dummy_data.json
 favicon.ico
 init_db.py
-models.py
 remove_duplicates.py
 requirements.txt
 runtime.txt
@@ -26,7 +25,6 @@ scrapinghub.yml
 scrapy.cfg
 setup.py
 static/main.js
-tasks.py
 templates/index.html
 templates/layout.html
 translate.py
