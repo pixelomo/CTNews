@@ -106,7 +106,6 @@ def run_spider():
     process.crawl('articles')
     process.start()
 
-
 @app.before_first_request
 def start_spider_on_deploy():
     run_spider()

@@ -24,6 +24,9 @@ class ArticlesPipeline(object):
         return chunks
 
     def translate_html(self, html, max_tokens, translated_title):
+        if html is None:
+            return ""
+
         soup = BeautifulSoup(html, "html.parser")
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
@@ -57,6 +60,7 @@ class ArticlesPipeline(object):
             first_suitable_tag.insert_before(h3_tag)
 
         return str(soup)
+
 
     def process_item(self, item, spider):
         article_text = item["text"]
