@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from translation_tasks import perform_translation
-from celery_config import app as celery_app
+from celery_config import celery_app
 from datetime import datetime
 from dateutil.parser import parse
 from sqlalchemy.exc import IntegrityError
