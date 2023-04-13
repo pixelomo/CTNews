@@ -1,5 +1,5 @@
 from celery import shared_task
-from .models import db, Article
+from models import db, Article
 from dateutil.parser import parse
 from sqlalchemy.exc import IntegrityError
 
