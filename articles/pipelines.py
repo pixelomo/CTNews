@@ -28,6 +28,8 @@ class ArticlesPipeline(object):
             return ""
 
         soup = BeautifulSoup(html, "html.parser")
+        if soup.body is None:
+        return ""
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
         for element in paragraphs:

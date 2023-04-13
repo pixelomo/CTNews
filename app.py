@@ -81,7 +81,6 @@ class SaveArticleResource(Resource):
             link=data["link"],
             text=data["text"],
             html=data["html"],
-            # Use get method with a default value - prevent the KeyError and handle cases where the key is missing.
             content_translated=data.get("content_translated", "")
         )
 
