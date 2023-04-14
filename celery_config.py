@@ -5,16 +5,10 @@ import ssl
 import redis
 
 load_dotenv()
-REDIS_URL = os.environ.get('REDIS_URL')
-
-# Create a Redis connection using SSL
-redis_conn = redis.Redis.from_url(
-    REDIS_URL,
-    ssl_cert_reqs=ssl.CERT_NONE,
-)
+REDIS_URL = redis.from_url(os.environ.get("REDIS_URL"))
 
 ssl_options = {
-    'ssl_cert_reqs': ssl.CERT_NONE,
+    'ssl_cert_reqs': None,
 }
 
 celery_app = Celery('translation_tasks', broker=REDIS_URL, broker_use_ssl=ssl_options)
@@ -25,3 +19,5 @@ celery_app.conf.update(
     timezone='UTC',
     enable_utc=True,
 )
+
+
