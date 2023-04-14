@@ -1,17 +1,20 @@
 from dotenv import load_dotenv
 from celery import Celery
 import os
-import ssl
 import redis
+from urllib.parse import urlparse
 
 load_dotenv()
-REDIS_URL = redis.from_url(os.environ.get("REDIS_URL"))
+REDIS_URL = os.environ.get("REDIS_URL")
+url = urlparse(REDIS_URL)
 
 ssl_options = {
     'ssl_cert_reqs': None,
 }
 
-celery_app = Celery('translation_tasks', broker=REDIS_URL, broker_use_ssl=ssl_options)
+redis_url_with_ssl = f'redis://{url.username}:{url.password}@{url.hostname}:{url.port}/0'
+
+celery_app = Celery('translation_tasks', broker=redis_url_with_ssl, broker_use_ssl=ssl_options)
 celery_app.conf.update(
     task_serializer='json',
     accept_content=['json'],
@@ -19,5 +22,3 @@ celery_app.conf.update(
     timezone='UTC',
     enable_utc=True,
 )
-
-
