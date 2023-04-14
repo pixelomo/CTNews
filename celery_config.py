@@ -1,23 +1,23 @@
+from dotenv import load_dotenv
 from celery import Celery
 import os
-import redis
 import ssl
+import redis
 
-# Get the Redis URL from environment variables
-broker_url = os.environ.get('REDIS_URL')
+load_dotenv()
+REDIS_URL = os.environ.get('REDIS_URL')
 
-# Parse the URL to extract the different components
-parsed_url = redis.Redis.from_url(broker_url)
+# Create a Redis connection using SSL
+redis_conn = redis.Redis.from_url(
+    REDIS_URL,
+    ssl_cert_reqs=ssl.CERT_NONE,
+)
 
-# Set up the SSL options for the Redis connection
 ssl_options = {
     'ssl_cert_reqs': ssl.CERT_NONE,
 }
 
-# Create a Celery app with the specified broker URL and SSL options
-celery_app = Celery('translation_tasks', broker=parsed_url, broker_use_ssl=ssl_options)
-
-# Update Celery app configuration
+celery_app = Celery('translation_tasks', broker=REDIS_URL, broker_use_ssl=ssl_options)
 celery_app.conf.update(
     task_serializer='json',
     accept_content=['json'],
