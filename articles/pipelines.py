@@ -67,38 +67,47 @@ class ArticlesPipeline(object):
         return str(soup)
 
     def process_item(self, item, spider):
-        article_text = item["text"]
-        max_tokens = 2048  # Adjust based on the model limit
+        def on_translate_title_done(task_id, item):
+            translated_title = celery_app.AsyncResult(task_id).get()
+            item["title_translated"] = translated_title
+            print(f"Translated title: {translated_title}")
+
+        def on_translate_html_done(task_id, item):
+            content_translated = celery_app.AsyncResult(task_id).get()
+            print(f"Translated content: {content_translated}")
+
+            # Save the item to the database
+            with app.app_context():
+                article = Article(
+                    title=item["title"],
+                    title_translated=item["title_translated"],
+                    pubDate=item["pubDate"],
+                    link=item["link"],
+                    text=item["text"],
+                    html=item["html"],
+                    content_translated=content_translated
+                )
+
+                try:
+                    db.session.add(article)
+                    db.session.commit()
+                    print("Article saved successfully.")
+                except IntegrityError:
+                    db.session.rollback()
+                    print("Article with the same link already exists.")
 
         # Translate the title
-        translation_task_title = perform_translation.delay(item["title"], "en")
-        translated_title = celery_app.AsyncResult(translation_task_title.id).get()
+        translation_task_title = perform_translation.apply_async(
+            args=(item["title"], "en"),
+            link=on_translate_title_done.s(item)
+        )
 
         # Translate the HTML content
-        translation_task_html = perform_translation.delay(item["html"], "en")
-        content_translated = celery_app.AsyncResult(translation_task_html.id).get()
-
-        # Save the translated content in the item
-        item["content_translated"] = content_translated
-
-        # Save the item to the database
-        with app.app_context():
-            article = Article(
-                title=item["title"],
-                pubDate=item["pubDate"],
-                link=item["link"],
-                text=item["text"],
-                html=item["html"],
-                content_translated=item["content_translated"]
-            )
-
-            try:
-                db.session.add(article)
-                db.session.commit()
-                print("Article saved successfully.")
-            except IntegrityError:
-                db.session.rollback()
-                print("Article with the same link already exists.")
+        translation_task_html = perform_translation.apply_async(
+            args=(item["html"], "en"),
+            link=on_translate_html_done.s(item)
+        )
 
         return item
+
 
