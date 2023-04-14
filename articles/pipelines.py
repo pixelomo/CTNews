@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup, NavigableString
 from translation_tasks import perform_translation
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
-from celery_config import celery_app
+from celery_app import celery_app
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):

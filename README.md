@@ -14,7 +14,7 @@ articles/settings.py
 articles/spiders/__init__.py
 articles/spiders/articles.py
 articles/spiders/run_spider.py
-celery_config.py
+celery_app.py
 dummy_data.json
 favicon.ico
 init_db.py
