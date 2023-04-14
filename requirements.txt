@@ -40,4 +40,5 @@ Scrapy
 gunicorn
 beautifulsoup4==4.10.0
 celery==5.2.1
+celery[redis]
 redis==4.1.4
