@@ -2,7 +2,7 @@ from celery import Celery
 import os
 import ssl  # Add this import
 
-broker_url = os.environ.get('REDIS_URL')
+broker_url = os.environ.get('REDIS')
 
 celery_app = Celery('translation_tasks', broker=broker_url)
 celery_app.conf.update(
