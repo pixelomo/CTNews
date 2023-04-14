@@ -11,15 +11,9 @@ celery_app = Celery('translation_tasks', broker=redis_url, backend=redis_url)
 celery_app.conf.update(
     broker_use_ssl={
         'ssl_cert_reqs': ssl.CERT_NONE,
-        'keyfile': None,
-        'certfile': None,
-        'ca_certs': None,
     },
     redis_backend_use_ssl={
         'ssl_cert_reqs': ssl.CERT_NONE,
-        'keyfile': None,
-        'certfile': None,
-        'ca_certs': None,
     },
     task_serializer='json',
     accept_content=['json'],
