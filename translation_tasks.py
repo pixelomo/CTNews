@@ -1,4 +1,4 @@
-from celery_config import celery_app
+from celery_app import celery_app  # Change this import
 from translate import translate_with_gpt
 
 @celery_app.task
