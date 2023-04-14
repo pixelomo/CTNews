@@ -15,7 +15,7 @@ ssl_options = {
 }
 
 # Create a Celery app with the specified broker URL and SSL options
-celery_app = Celery('translation_tasks', broker=broker_url, broker_use_ssl=ssl_options)
+celery_app = Celery('translation_tasks', broker=parsed_url, broker_use_ssl=ssl_options)
 
 # Update Celery app configuration
 celery_app.conf.update(
@@ -25,4 +25,3 @@ celery_app.conf.update(
     timezone='UTC',
     enable_utc=True,
 )
-
