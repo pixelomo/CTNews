@@ -52,13 +52,12 @@ class ArticlesPipeline(object):
         h3_tag = soup.new_tag("h3")
         h3_tag.string = translated_title
 
-        first_suitable_tag = soup.body.find(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
-        if first_suitable_tag:
-            first_suitable_tag.insert_before(h3_tag)
+        if soup.body is not None:
+            first_suitable_tag = soup.body.find(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
+            if first_suitable_tag:
+                first_suitable_tag.insert_before(h3_tag)
 
         return str(soup)
-
-
 
     def process_item(self, item, spider):
         article_text = item["text"]
