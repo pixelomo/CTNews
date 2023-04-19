@@ -63,7 +63,6 @@ class ArticlesPipeline(object):
     def process_item(self, item, spider):
         article_text = item["text"]
         max_tokens = 2048  # Adjust based on the model limit
-
         # Translate the title
         translated_title = translate_with_gpt(item["title"])
 
