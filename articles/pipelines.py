@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup, NavigableString
-from translation_tasks import perform_translation
+from translate import translate_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
-from celery_app import celery_app
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
@@ -25,14 +24,7 @@ class ArticlesPipeline(object):
         return chunks
 
     def translate_html(self, html, max_tokens, translated_title):
-        if html is None:
-            return ""
-
         soup = BeautifulSoup(html, "html.parser")
-
-        if not soup.body:
-            return ""
-
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
         for element in paragraphs:
@@ -66,28 +58,30 @@ class ArticlesPipeline(object):
 
         return str(soup)
 
-    from celery import signature
 
-def process_item(self, item, spider):
-    def on_translate_title_done(task_id, item):
-        translated_title = celery_app.AsyncResult(task_id).get()
-        item["title_translated"] = translated_title
-        print(f"Translated title: {translated_title}")
 
-    def on_translate_html_done(task_id, item):
-        content_translated = celery_app.AsyncResult(task_id).get()
-        print(f"Translated content: {content_translated}")
+    def process_item(self, item, spider):
+        article_text = item["text"]
+        max_tokens = 2048  # Adjust based on the model limit
+
+        # Translate the title
+        translated_title = translate_with_gpt(item["title"])
+
+        # Translate the HTML content
+        content_translated = self.translate_html(item["html"], max_tokens, translated_title)
+
+        # Save the translated content in the item
+        item["content_translated"] = content_translated
 
         # Save the item to the database
         with app.app_context():
             article = Article(
                 title=item["title"],
-                title_translated=item["title_translated"],
                 pubDate=item["pubDate"],
                 link=item["link"],
                 text=item["text"],
                 html=item["html"],
-                content_translated=content_translated
+                content_translated=item["content_translated"]
             )
 
             try:
@@ -98,22 +92,4 @@ def process_item(self, item, spider):
                 db.session.rollback()
                 print("Article with the same link already exists.")
 
-    # Create Celery signatures for the callback functions
-    on_translate_title_done_sig = signature(on_translate_title_done, args=(item,))
-    on_translate_html_done_sig = signature(on_translate_html_done, args=(item,))
-
-    # Translate the title
-    translation_task_title = perform_translation.apply_async(
-        args=(item["title"], "en"),
-        link=on_translate_title_done_sig
-    )
-
-    # Translate the HTML content
-    translation_task_html = perform_translation.apply_async(
-        args=(item["html"], "en"),
-        link=on_translate_html_done_sig
-    )
-
-    return item
-
-
+        return item
