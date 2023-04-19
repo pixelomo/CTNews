@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from translation_tasks import perform_translation
@@ -8,15 +8,21 @@ from celery_app import celery_app
 from datetime import datetime
 from dateutil.parser import parse
 from sqlalchemy.exc import IntegrityError
-from flask import render_template
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
+# from scrapy.crawler import CrawlerProcess
+# from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
+
+@app.route('/api/get_dummy_data')
+def get_dummy_data():
+    if os.environ.get('FLASK_DEBUG') == '1':
+        return jsonify(load_dummy_data())
+    else:
+        return jsonify({"error": "Dummy data is only available in development environment"})
 
 @app.route('/api/translate', methods=['POST'])
 def translate():
@@ -49,13 +55,6 @@ def load_dummy_data():
         data.append(formatted_article)
 
     return data
-
-@app.route('/api/get_dummy_data')
-def get_dummy_data():
-    if os.environ.get('FLASK_ENV') == 'development':
-        return jsonify(load_dummy_data())
-    else:
-        return jsonify({"error": "Dummy data is only available in development environment"})
 
 @app.route('/')
 def index():
@@ -93,14 +92,14 @@ class GetAllArticlesResource(Resource):
 # api.add_resource(SaveArticleResource, "/api/save_article")
 api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
 
-def run_spider():
-    process = CrawlerProcess(get_project_settings())
-    process.crawl('articles')
-    process.start()
+# def run_spider():
+#     process = CrawlerProcess(get_project_settings())
+#     process.crawl('articles')
+#     process.start()
 
-@app.before_first_request
-def start_spider_on_deploy():
-    run_spider()
+# @app.before_first_request
+# def start_spider_on_deploy():
+#     run_spider()
 
 if __name__ == '__main__':
     if os.environ.get('FLASK_ENV') == 'development':
