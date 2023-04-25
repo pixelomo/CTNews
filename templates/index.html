@@ -4,22 +4,26 @@
 <div class="container">
     <div class="row">
         <div class="sidebar col-md-2">
-            <!-- <button id="sidebar-toggle" class="sidebar-toggle">Hide</button> -->
+            <button id="sidebar-toggle" class="sidebar-toggle"><svg width="800px" height="800px" viewBox="0 0 24 24" mirror-in-rtl="true"><path fill="#ffffff" d="M13.75 22.987l-7.99-9c-.51-.57-.76-1.28-.76-1.99s.25-1.42.74-1.98c.01 0 .01-.01.01-.01l.02-.02 7.98-8.98c1.1-1.24 3.002-1.35 4.242-.25 1.24 1.1 1.35 3 .25 4.23l-6.23 7.01 6.23 7.01c1.1 1.24.99 3.13-.25 4.24-1.24 1.1-3.13.98-4.24-.26z"/></svg></button>
             <ul id="article-list" class="list-group">
-                <!-- Articles will be populated here -->
+            <!-- Articles will be populated here -->
             </ul>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="row">
-                <div class="col-md-6 scroll-container">
-                    <h3 id="original-title" class=""></h3>
-                    <div id="original-html">
-                        <!-- Original HTML content will be displayed here -->
-                    </div>
+              <div class="tabs-container">
+                <button class="tab-button active" data-target="english">EN</button>
+                <button class="tab-button" data-target="japanese">JP</button>
+              </div>
+              <div class="col-md-5 col-12 original scroll-container tab" id="english">
+                <h3 id="original-title" class=""></h3>
+                <div id="original-html">
+                  <!-- Original HTML content will be displayed here -->
                 </div>
-                <div class="col-md-6">
-                    <textarea id="translation-editor" class="scroll-container"></textarea>
-                </div>
+              </div>
+              <div class="col-md-7 col-12 scroll-container tab" id="japanese" style="display:none;">
+                <textarea id="translation-editor" class="scroll-container"></textarea>
+              </div>
             </div>
         </div>
     </div>

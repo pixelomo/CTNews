@@ -59,20 +59,61 @@ class ArticlesPipeline(object):
 
         return str(soup)
 
+    # def process_item(self, item, spider):
+    #     article_text = item["text"]
+    #     max_tokens = 2048  # Adjust based on the model limit
+    #     # Translate the title
+    #     translated_title = translate_with_gpt(item["title"])
+
+    #     # Translate the HTML content
+    #     content_translated = self.translate_html(item["html"], max_tokens, translated_title)
+
+    #     # Save the translated content in the item
+    #     item["content_translated"] = content_translated
+
+    #     # Save the item to the database
+    #     with app.app_context():
+    #         article = Article(
+    #             title=item["title"],
+    #             pubDate=item["pubDate"],
+    #             link=item["link"],
+    #             text=item["text"],
+    #             html=item["html"],
+    #             content_translated=item["content_translated"]
+    #         )
+
+    #         try:
+    #             db.session.add(article)
+    #             db.session.commit()
+    #             print("Article saved successfully.")
+    #         except IntegrityError:
+    #             db.session.rollback()
+    #             print("Article with the same link already exists.")
+
+    #     return item
+
     def process_item(self, item, spider):
-        article_text = item["text"]
-        max_tokens = 2048  # Adjust based on the model limit
-        # Translate the title
-        translated_title = translate_with_gpt(item["title"])
-
-        # Translate the HTML content
-        content_translated = self.translate_html(item["html"], max_tokens, translated_title)
-
-        # Save the translated content in the item
-        item["content_translated"] = content_translated
-
-        # Save the item to the database
         with app.app_context():
+            # Check if an article with the same title already exists in the database
+            existing_article = Article.query.filter_by(title=item["link"]).first()
+
+            if existing_article:
+                print("Article with the same link already exists.")
+                return item
+
+            article_text = item["text"]
+            max_tokens = 2048  # Adjust based on the model limit
+
+            # Translate the title
+            translated_title = translate_with_gpt(item["title"])
+
+            # Translate the HTML content
+            content_translated = self.translate_html(item["html"], max_tokens, translated_title)
+
+            # Save the translated content in the item
+            item["content_translated"] = content_translated
+
+            # Save the item to the database
             article = Article(
                 title=item["title"],
                 pubDate=item["pubDate"],
@@ -86,8 +127,8 @@ class ArticlesPipeline(object):
                 db.session.add(article)
                 db.session.commit()
                 print("Article saved successfully.")
-            except IntegrityError:
+            except IntegrityError as e:
                 db.session.rollback()
-                print("Article with the same link already exists.")
+                print("Article with the same link already exists. Error:", e)
 
         return item
