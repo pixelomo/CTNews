@@ -1,11 +1,11 @@
 import scrapy
 from articles.items import Article
 
-class ArticlesSpider(scrapy.Spider):
-    name = "articles"
-    allowed_domains = ["cointelegraph.com"]
+class WublockSpider(scrapy.Spider):
+    name = "wublock"
+    allowed_domains = ["web.telegram.org", "t.me"]
     start_urls = [
-        'https://cointelegraph.com/rss',
+        'http://fetchrss.com/rss/6447538cda605f38e77dc503644753962bdd8d1a31560e23.xml',  # Replace with the fetchrss.com generated RSS feed URL
     ]
 
     def parse(self, response):
@@ -16,7 +16,7 @@ class ArticlesSpider(scrapy.Spider):
                 yield scrapy.Request(link, callback=self.parse_article, meta={
                     "title": item.xpath("title/text()").get(),
                     "pubDate": item.xpath("pubDate/text()").get(),
-                    "source": "Cointelegraph",
+                    "source": "Wublock",
                 })
 
     def parse_article(self, response):

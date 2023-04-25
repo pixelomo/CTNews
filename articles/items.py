@@ -15,3 +15,4 @@ class Article(scrapy.Item):
     pubDate = scrapy.Field()
     html = scrapy.Field()
     text = scrapy.Field()
+    source = scrapy.Field()
