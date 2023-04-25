@@ -45,9 +45,9 @@ $(document).ready(function () {
     const sidebar = document.querySelector('.sidebar');
 
     sidebarToggle.addEventListener('click', () => {
-        sidebar.style.transform = sidebar.style.transform === 'translateX(-100%)' ? 'translateX(0)' : 'translateX(-100%)';
+        sidebar.style.transform = sidebar.style.transform === 'translateX(calc(-100% + 30px))' ? 'translateX(0)' : 'translateX(calc(-100% + 30px))';
         // sidebarToggle.style.transform = sidebar.style.transform === 'translateX(-100%)' ? 'translateX(100%)' : 'translateX(0)';
-        sidebarToggle.innerHTML = sidebar.style.transform === 'translateX(-100%)' ? '<svg width="800px" height="800px" viewBox="0 0 24 24" mirror-in-rtl="true"><path fill="#ffffff" d="M10.25 22.987l7.99-9c.51-.57.76-1.28.76-1.99s-.25-1.42-.74-1.98c-.01 0-.01-.01-.01-.01l-.02-.02-7.98-8.98c-1.1-1.24-3.002-1.35-4.242-.25-1.24 1.1-1.35 3-.25 4.23l6.23 7.01-6.23 7.01c-1.1 1.24-.99 3.13.25 4.24 1.24 1.1 3.13.98 4.24-.26z"/></svg>' : '<svg width="800" height="800" viewBox="0 0 24 24" mirror-in-rtl="true"><path fill="#ffffff" d="M13.75 22.987l-7.99-9c-.51-.57-.76-1.28-.76-1.99s.25-1.42.74-1.98c.01 0 .01-.01.01-.01l.02-.02 7.98-8.98c1.1-1.24 3.002-1.35 4.242-.25 1.24 1.1 1.35 3 .25 4.23l-6.23 7.01 6.23 7.01c1.1 1.24.99 3.13-.25 4.24-1.24 1.1-3.13.98-4.24-.26z"/></svg>';
+        sidebarToggle.innerHTML = sidebar.style.transform === 'translateX(calc(-100% + 30px))' ? '<svg width="800px" height="800px" viewBox="0 0 24 24" mirror-in-rtl="true"><path fill="#ffffff" d="M10.25 22.987l7.99-9c.51-.57.76-1.28.76-1.99s-.25-1.42-.74-1.98c-.01 0-.01-.01-.01-.01l-.02-.02-7.98-8.98c-1.1-1.24-3.002-1.35-4.242-.25-1.24 1.1-1.35 3-.25 4.23l6.23 7.01-6.23 7.01c-1.1 1.24-.99 3.13.25 4.24 1.24 1.1 3.13.98 4.24-.26z"/></svg>' : '<svg width="800" height="800" viewBox="0 0 24 24" mirror-in-rtl="true"><path fill="#ffffff" d="M13.75 22.987l-7.99-9c-.51-.57-.76-1.28-.76-1.99s.25-1.42.74-1.98c.01 0 .01-.01.01-.01l.02-.02 7.98-8.98c1.1-1.24 3.002-1.35 4.242-.25 1.24 1.1 1.35 3 .25 4.23l-6.23 7.01 6.23 7.01c1.1 1.24.99 3.13-.25 4.24-1.24 1.1-3.13.98-4.24-.26z"/></svg>';
     });
 
     function onArticleClick(event) {

@@ -1,17 +1,22 @@
 import scrapy
+from bs4 import BeautifulSoup
 from articles.items import Article
 
 class WublockSpider(scrapy.Spider):
     name = "wublock"
-    allowed_domains = ["web.telegram.org", "t.me"]
+    allowed_domains = ["fetchrss.com"]
+    # https://t.me/s/wublockchainenglish
     start_urls = [
-        'http://fetchrss.com/rss/6447538cda605f38e77dc503644753962bdd8d1a31560e23.xml',  # Replace with the fetchrss.com generated RSS feed URL
+        'http://fetchrss.com/rss/6447538cda605f38e77dc503644753962bdd8d1a31560e23.xml',
     ]
 
     def parse(self, response):
         items = response.xpath("//item")
         for item in items:
-            link = item.xpath("link/text()").get()
+            description = item.xpath("description/text()").get()
+            soup = BeautifulSoup(description, "html.parser")
+            link = soup.find("a", href=True)["href"]
+
             if link:
                 yield scrapy.Request(link, callback=self.parse_article, meta={
                     "title": item.xpath("title/text()").get(),
@@ -23,8 +28,8 @@ class WublockSpider(scrapy.Spider):
         scraped_title = response.meta["title"]
         scraped_link = response.url
         scraped_pubDate = response.meta["pubDate"]
-        scraped_html = response.css(".post-content").get()
-        scraped_text = "".join(response.css(".post-content *::text").getall())
+        scraped_html = response.body  # The entire content as there is no specific container
+        scraped_text = "".join(response.css("body *::text").getall())
 
         yield {
             "title": scraped_title,

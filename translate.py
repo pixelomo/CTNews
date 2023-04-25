@@ -35,7 +35,7 @@ def translate_with_gpt(text, target_language="Japanese"):
             "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
             "以下の記事を上記の条件を守りながら和訳してください。\n"
         )
-        prompt = f"Translate the following English text to {target_language}:\n{text}"
+        prompt = f"Translate the following text to {target_language}:\n{text}"
         print("Text to translate:", text)
         print("Target language:", target_language)
 
