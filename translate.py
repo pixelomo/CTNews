@@ -46,7 +46,7 @@ def translate_with_gpt(text, target_language="Japanese"):
                 {"role": "user", "content": prompt},
             ],
             max_tokens=2000,
-            temperature=0.2,
+            temperature=0.9,
             n=1,
         )
 
@@ -64,10 +64,6 @@ def translate_with_gpt(text, target_language="Japanese"):
         print(f"Translated Text: {translated_text}")
 
         return translated_text
-
-    # except Exception as e:
-    #     print(f"Error during API request: {e}")
-    #     return None
 
     except openai.OpenAIError as e:
         print(f"Error during API request: {e}")
