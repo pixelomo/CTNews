@@ -32,5 +32,5 @@ class ArticlesSpider(scrapy.Spider):
             "link": scraped_link,
             "text": scraped_text,
             "html": scraped_html,
-            "source": response.meta["source"],
+            "source": "Cointelegraph"
         }

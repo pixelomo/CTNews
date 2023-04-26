@@ -59,7 +59,7 @@ class Article(db.Model):
     link = db.Column(db.String, nullable=False, unique=True)
     text = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
-    title_translated = db.Column(db.String)
+    title_translated = db.Column(db.String, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
     source = Column(String)
 
