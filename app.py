@@ -5,14 +5,17 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dateutil.parser import parse
+from sqlalchemy import Column, String
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
+migrate = Migrate(app, db)
 
 def load_dummy_data():
     with open('dummy_data.json', 'r') as file:
@@ -44,7 +47,7 @@ def get_dummy_data():
 def index():
     return render_template('index.html')
 
-@app.route('/favicon.ico')
+@app.route('/static/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
@@ -56,6 +59,7 @@ class Article(db.Model):
     text = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
+    source = Column(String)
 
     def to_dict(self):
         return {

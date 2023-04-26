@@ -21,20 +21,73 @@ $(document).ready(function () {
                 data = [data];
             }
 
-            $("#article-list").empty();
-            data.forEach(function (article) {
-                $("<li>")
-                    .addClass("list-group-item")
-                    .text(article.title)
-                    .data("article", article)
-                    .on("click", function (event) {
-                        onArticleClick(event);
+            // Create an object to hold the articles by source
+            const articlesBySource = {};
 
-                        $("#original-title").html(article.title);
-                        $("#original-html").html(article.html);
-                        tinymce.get("translation-editor").setContent(article.content_translated || '');
-                    })
-                    .appendTo("#article-list");
+            data.forEach(function (article) {
+                if (!articlesBySource[article.source]) {
+                    articlesBySource[article.source] = [];
+                }
+                articlesBySource[article.source].push(article);
+            });
+
+            // Clear the existing accordions
+            $("#source-accordion").empty();
+
+            // Iterate over each source and create the accordion items
+            Object.keys(articlesBySource).forEach(function (source) {
+                const sourceArticles = articlesBySource[source];
+
+                // Create the accordion item for this source
+                const accordionItem = $("<div>")
+                    .addClass("accordion-item")
+                    .appendTo("#source-accordion");
+
+                // Create the accordion header
+                const accordionHeader = $("<h2>")
+                    .addClass("accordion-header")
+                    .attr("id", `${source}-heading`)
+                    .appendTo(accordionItem);
+
+                // Create the accordion button
+                $("<button>")
+                    .addClass("accordion-button collapsed")
+                    .attr("type", "button")
+                    .attr("data-bs-toggle", "collapse")
+                    .attr("data-bs-target", `#${source}-collapse`)
+                    .attr("aria-expanded", "false")
+                    .attr("aria-controls", `${source}-collapse`)
+                    .text(source)
+                    .appendTo(accordionHeader);
+
+                // Create the accordion collapse
+                const accordionCollapse = $("<div>")
+                    .attr("id", `${source}-collapse`)
+                    .addClass("accordion-collapse collapse")
+                    .attr("aria-labelledby", `${source}-heading`)
+                    .attr("data-bs-parent", "#source-accordion")
+                    .appendTo(accordionItem);
+
+                // Create the list group for this source's articles
+                const listGroup = $("<ul>")
+                    .addClass("list-group")
+                    .appendTo(accordionCollapse);
+
+                // Add the articles to the list group
+                sourceArticles.forEach(function (article) {
+                    $("<li>")
+                        .addClass("list-group-item")
+                        .text(article.title)
+                        .data("article", article)
+                        .on("click", function (event) {
+                            onArticleClick(event);
+
+                            $("#original-title").html(article.title);
+                            $("#original-html").html(article.html);
+                            tinymce.get("translation-editor").setContent(article.content_translated || '');
+                        })
+                        .appendTo(listGroup);
+                });
             });
         });
     }
