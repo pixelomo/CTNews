@@ -84,7 +84,7 @@ $(document).ready(function () {
 
                             $("#original-title").html(article.title);
                             $("#original-html").html(article.html);
-                            tinymce.get("translation-editor").setContent(article.content_translated || '');
+                            tinymce.get("translation-editor").setContent( `<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
                         })
                         .appendTo(listGroup);
                 });

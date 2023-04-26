@@ -23,7 +23,7 @@ class ArticlesPipeline(object):
 
         return chunks
 
-    def translate_html(self, html, max_tokens, translated_title):
+    def translate_html(self, html, max_tokens):
         soup = BeautifulSoup(html, "html.parser")
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
@@ -49,14 +49,6 @@ class ArticlesPipeline(object):
                 new_tag.string = translated_text
                 element.replace_with(new_tag)
 
-        h3_tag = soup.new_tag("h3")
-        h3_tag.string = translated_title
-
-        if soup.body is not None:
-            first_suitable_tag = soup.body.find(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
-            if first_suitable_tag:
-                first_suitable_tag.insert_before(h3_tag)
-
         return str(soup)
 
     def process_item(self, item, spider):
@@ -74,7 +66,7 @@ class ArticlesPipeline(object):
             translated_title = translate_with_gpt(item["title"])
 
             # Translate the HTML content
-            content_translated = self.translate_html(item["html"], max_tokens, translated_title)
+            content_translated = self.translate_html(item["html"], max_tokens)
 
             # Save the translated content in the item
             item["content_translated"] = content_translated
@@ -86,7 +78,9 @@ class ArticlesPipeline(object):
                 link=item["link"],
                 text=item["text"] if item.get("text") else None,
                 html=item["html"],
-                content_translated=item["content_translated"]
+                source=item["source"],
+                content_translated=item["content_translated"],
+                title_translated=translated_title
             )
 
             try:

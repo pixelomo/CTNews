@@ -30,7 +30,8 @@ def load_dummy_data():
             "link": article[3],
             "text": article[4],
             "html": article[5],
-            "content_translated": article[6]
+            "content_translated": article[6],
+            "title_translated": 'Title'
         }
         data.append(formatted_article)
 
@@ -58,6 +59,7 @@ class Article(db.Model):
     link = db.Column(db.String, nullable=False, unique=True)
     text = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
+    title_translated = db.Column(db.String)
     content_translated = db.Column(db.Text, nullable=True)
     source = Column(String)
 
@@ -69,6 +71,8 @@ class Article(db.Model):
             "link": self.link,
             "text": self.text,
             "html": self.html,
+            "source": self.source,
+            "title_translated": self.title_translated,
             "content_translated": self.content_translated,
         }
 
@@ -83,6 +87,8 @@ class SaveArticleResource(Resource):
             link=data["link"],
             text=data["text"],
             html=data["html"],
+            source=data["source"],
+            title_translated=data["title_translated"],
             content_translated=data["content_translated"]
         )
 
