@@ -24,7 +24,6 @@ class WublockSpider(scrapy.Spider):
                 text=text,
                 source="WuBlockchain",
             )
-
 # https://t.me/s/wublockchainenglish
 # https://twitter.com/WuBlockchain
 # https://www.odaily.news/newsflash
