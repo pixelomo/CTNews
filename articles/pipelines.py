@@ -68,7 +68,6 @@ class ArticlesPipeline(object):
                 print("Article with the same link already exists.")
                 return item
 
-            article_text = item["text"]
             max_tokens = 5650  # Adjust based on the model limit
 
             # Translate the title
@@ -85,7 +84,7 @@ class ArticlesPipeline(object):
                 title=item["title"],
                 pubDate=item["pubDate"],
                 link=item["link"],
-                text=item["text"],
+                text=item["text"] if item.get("text") else None,
                 html=item["html"],
                 content_translated=item["content_translated"]
             )
