@@ -53,7 +53,7 @@ class ArticlesPipeline(object):
 
     async def process_item(self, item, spider):
         # Translate title
-        title_translated = await self.translate_title_with_gpt(item["title"])
+        title_translated = await translate_title_with_gpt(item["title"])
         item["title_translated"] = title_translated
 
         # Check if the text field is not None
