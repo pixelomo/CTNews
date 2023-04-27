@@ -58,7 +58,7 @@ def translate_title_with_gpt(text, target_language="Japanese"):
                 {"role": "system", "content": briefing},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=min(50, len(text) * 2),
+            max_tokens=min(50, len(text) * 1.2),
             temperature=0.9,
             n=1,
         )

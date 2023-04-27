@@ -119,10 +119,10 @@ $(document).ready(function () {
 
     function filterLatestArticles(articles) {
         const now = new Date();
-        const twelveHours = 12 * 60 * 60 * 1000;
+        const twentyFourHours = 24 * 60 * 60 * 1000;
         return articles.filter(article => {
             const pubDate = new Date(article.pubDate);
-            return now - pubDate < twelveHours;
+            return now - pubDate < twentyFourHours;
         });
     }
 
