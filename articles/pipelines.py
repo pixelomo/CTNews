@@ -51,39 +51,39 @@ class ArticlesPipeline(object):
 
         return str(soup)
 
-    def process_item(self, item, spider):
-        with app.app_context():
+    async def process_item(self, item, spider):
+        # Translate title
+        title_translated = await self.translate_title_with_gpt(item["title"])
+        item["title_translated"] = title_translated
 
-            max_tokens = 5650  # Adjust based on the model limit
+        # Check if the text field is not None
+        if item["text"]:
+            # Set max tokens for text translation
+            max_tokens = 5650
 
-            # Translate the title
-            translated_title = translate_title_with_gpt(item["title"])
-            print(f"Translated Title: {translated_title}")
-
-            # Translate the HTML content
+            # Translate text
             content_translated = self.translate_html(item["html"], max_tokens)
-
-            # Save the translated content in the item
             item["content_translated"] = content_translated
 
-            # Save the item to the database
+        # Save article to database
+        try:
             article = Article(
                 title=item["title"],
+                title_translated=item["title_translated"],
                 pubDate=item["pubDate"],
                 link=item["link"],
                 text=item["text"] if item.get("text") else None,
                 html=item["html"],
-                source=item["source"],
                 content_translated=item["content_translated"],
-                title_translated=translated_title
+                source=item["source"],
             )
+            self.session.add(article)
+            self.session.commit()
 
-            try:
-                db.session.add(article)
-                db.session.commit()
-                print("Article saved successfully.")
-            except IntegrityError as e:
-                db.session.rollback()
-                print("Article with the same link already exists. Error:", e)
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            spider.logger.error(f"Error saving article: {e}")
+            raise DropItem(f"Error saving article: {e}")
 
         return item
+

@@ -17,14 +17,17 @@ class WublockSpider(scrapy.Spider):
                 pubDate = datetime.datetime.fromisoformat(pubDate)
             title = article.xpath(".//div[contains(@class, 'tgme_widget_message_text')]/text()").get()
             link = article.xpath(".//a[contains(@class, 'tgme_widget_message_link_preview')]/@href").get() or article.xpath(".//a[contains(@class, 'tgme_widget_message_bubble')]/@href").get()
+            html = article.get()
 
             yield Article(
                 title=title,
                 pubDate=pubDate,
                 link=link,
                 text=None,
+                html=html,
                 source="WuBlockchain",
             )
+
 
 # https://www.odaily.news/newsflash
 #  https://foresightnews.pro/news
