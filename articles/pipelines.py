@@ -51,9 +51,9 @@ class ArticlesPipeline(object):
 
         return str(soup)
 
-    async def process_item(self, item, spider):
+    def process_item(self, item, spider):
         # Translate title
-        title_translated = await translate_title_with_gpt(item["title"])
+        title_translated = translate_title_with_gpt(item["title"])
         item["title_translated"] = title_translated
 
         # Check if the text field is not None
