@@ -30,12 +30,16 @@
             border-right: 1px solid #eeeeee;
             background: #fff;
             height: 100vh;
+            display: block !important;
         }
         .list-group-item{
             font-size: 14px;
             white-space: nowrap;
             overflow: hidden;
+            padding: 0.25rem;
             text-overflow: ellipsis;
+            display: flex;
+            flex-direction: column;
         }
         .tox-tinymce {
             height: 100vh !important;
@@ -87,6 +91,11 @@
         }
         .sidebar-toggle svg {
             max-height: 20px;
+        }
+
+        .accordion-button {
+            padding: 0.25rem;
+            font-weight: 700;
         }
 
         .row {

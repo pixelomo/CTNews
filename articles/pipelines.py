@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup, NavigableString
-from translate import translate_with_gpt
+from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
 
@@ -45,7 +45,7 @@ class ArticlesPipeline(object):
 
             translated_text = " ".join(translated_chunks)
             if translated_text:
-                new_tag = soup.new_tag(element.name)
+                new_tag = soup.new_tag("p")
                 new_tag.string = translated_text
                 element.replace_with(new_tag)
 
@@ -53,17 +53,11 @@ class ArticlesPipeline(object):
 
     def process_item(self, item, spider):
         with app.app_context():
-            # Check if an article with the same title already exists in the database
-            existing_article = Article.query.filter_by(title=item["link"]).first()
-
-            if existing_article:
-                print("Article with the same link already exists.")
-                return item
 
             max_tokens = 5650  # Adjust based on the model limit
 
             # Translate the title
-            translated_title = translate_with_gpt(item["title"])
+            translated_title = translate_title_with_gpt(item["title"])
             print(f"Translated Title: {translated_title}")
 
             # Translate the HTML content

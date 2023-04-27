@@ -1,5 +1,5 @@
 import scrapy
-from articles.items import Article
+from app import app, db, Article
 
 class ArticlesSpider(scrapy.Spider):
     name = "articles"
@@ -25,6 +25,13 @@ class ArticlesSpider(scrapy.Spider):
         scraped_pubDate = response.meta["pubDate"]
         scraped_html = response.css(".post-content").get()
         scraped_text = "".join(response.css(".post-content *::text").getall())
+
+        # Check if an article with the same link already exists in the database
+        existing_article = Article.query.filter_by(link=scraped_link).first()
+
+        if existing_article:
+            print(f"Article with the same link already exists: {scraped_link}")
+            return
 
         yield {
             "title": scraped_title,

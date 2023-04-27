@@ -26,7 +26,5 @@ class WublockSpider(scrapy.Spider):
                 source="WuBlockchain",
             )
 
-# https://t.me/s/wublockchainenglish
-# https://twitter.com/WuBlockchain
 # https://www.odaily.news/newsflash
 #  https://foresightnews.pro/news

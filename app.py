@@ -31,7 +31,8 @@ def load_dummy_data():
             "text": article[4],
             "html": article[5],
             "content_translated": article[6],
-            "title_translated": 'Title'
+            "source": article[7],  # Add the source property here
+            "title_translated": article[8]  # Add the title_translated property here
         }
         data.append(formatted_article)
 

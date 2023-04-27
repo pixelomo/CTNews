@@ -21,6 +21,11 @@ $(document).ready(function () {
                 data = [data];
             }
 
+            // Sort articles by publication date (latest first)
+            data.sort(function (a, b) {
+                return new Date(b.pubDate) - new Date(a.pubDate);
+            });
+
             // Create an object to hold the articles by source
             const articlesBySource = {};
 
@@ -31,68 +36,129 @@ $(document).ready(function () {
                 articlesBySource[article.source].push(article);
             });
 
+            // Add a "Latest" accordion with articles from the past 12 hours
+            articlesBySource["Latest"] = filterLatestArticles(data);
+
             // Clear the existing accordions
             $("#source-accordion").empty();
 
             // Iterate over each source and create the accordion items
-            Object.keys(articlesBySource).forEach(function (source) {
-                const sourceArticles = articlesBySource[source];
+            Object.keys(articlesBySource)
+                .sort((a, b) => (a === "Latest" ? -1 : a.localeCompare(b)))
+                .forEach(function (source) {
+                    const sourceArticles = articlesBySource[source];
+                    // Create the accordion item for this source
+                    const accordionItem = $("<div>")
+                        .addClass("accordion-item")
+                        .appendTo("#source-accordion");
 
-                // Create the accordion item for this source
-                const accordionItem = $("<div>")
-                    .addClass("accordion-item")
-                    .appendTo("#source-accordion");
+                    // Create the accordion header
+                    const accordionHeader = $("<h2>")
+                        .addClass("accordion-header")
+                        .attr("id", `${source}-heading`)
+                        .appendTo(accordionItem);
 
-                // Create the accordion header
-                const accordionHeader = $("<h2>")
-                    .addClass("accordion-header")
-                    .attr("id", `${source}-heading`)
-                    .appendTo(accordionItem);
+                    // Create the accordion button
+                    $("<button>")
+                        .addClass("accordion-button collapsed")
+                        .attr("type", "button")
+                        .attr("data-bs-toggle", "collapse")
+                        .attr("data-bs-target", `#${source}-collapse`)
+                        .attr("aria-expanded", "false")
+                        .attr("aria-controls", `${source}-collapse`)
+                        .text(source)
+                        .appendTo(accordionHeader);
 
-                // Create the accordion button
-                $("<button>")
-                    .addClass("accordion-button collapsed")
-                    .attr("type", "button")
-                    .attr("data-bs-toggle", "collapse")
-                    .attr("data-bs-target", `#${source}-collapse`)
-                    .attr("aria-expanded", "false")
-                    .attr("aria-controls", `${source}-collapse`)
-                    .text(source)
-                    .appendTo(accordionHeader);
+                    // Create the accordion collapse
+                    const accordionCollapse = $("<div>")
+                        .attr("id", `${source}-collapse`)
+                        .addClass("accordion-collapse collapse")
+                        .attr("aria-labelledby", `${source}-heading`)
+                        .attr("data-bs-parent", "#source-accordion")
+                        .appendTo(accordionItem);
 
-                // Create the accordion collapse
-                const accordionCollapse = $("<div>")
-                    .attr("id", `${source}-collapse`)
-                    .addClass("accordion-collapse collapse")
-                    .attr("aria-labelledby", `${source}-heading`)
-                    .attr("data-bs-parent", "#source-accordion")
-                    .appendTo(accordionItem);
+                    // Create the list group for this source's articles
+                    const listGroup = $("<ul>")
+                        .addClass("list-group")
+                        .appendTo(accordionCollapse);
 
-                // Create the list group for this source's articles
-                const listGroup = $("<ul>")
-                    .addClass("list-group")
-                    .appendTo(accordionCollapse);
+                    // Add the articles to the list group
+                    sourceArticles.forEach(function (article) {
+                        const listItem = $("<li>")
+                            .addClass("list-group-item")
+                            .data("article", article)
+                            .on("click", function (event) {
+                                onArticleClick(event);
 
-                // Add the articles to the list group
-                sourceArticles.forEach(function (article) {
-                    $("<li>")
-                        .addClass("list-group-item")
-                        .text(article.title)
-                        .data("article", article)
-                        .on("click", function (event) {
-                            onArticleClick(event);
+                                $("#original-title").html(article.title);
+                                $("#original-html").html(article.html);
+                                tinymce.get("translation-editor").setContent(`<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
+                            });
 
-                            $("#original-title").html(article.title);
-                            $("#original-html").html(article.html);
-                            tinymce.get("translation-editor").setContent( `<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
-                        })
-                        .appendTo(listGroup);
+                        // Add the title
+                        $("<span>")
+                            .text(article.title)
+                            .appendTo(listItem);
+
+                        // Add the source icon
+                        getSourceIcon(article.source).appendTo(listItem);
+
+                        // Add the formatted date
+                        $("<small>")
+                            .addClass("text-muted")
+                            .text(formatDateToJST(article.pubDate))
+                            .appendTo(listItem);
+
+                        listItem.appendTo(listGroup);
+                    });
                 });
-            });
         });
     }
 
     loadArticles();
+
+    function filterLatestArticles(articles) {
+        const now = new Date();
+        const twelveHours = 12 * 60 * 60 * 1000;
+        return articles.filter(article => {
+            const pubDate = new Date(article.pubDate);
+            return now - pubDate < twelveHours;
+        });
+    }
+
+    function formatDateToJST(dateString) {
+        const localDate = new Date(dateString);
+        const offset = -9 * 60; // Tokyo is UTC+9
+        const jstDate = new Date(localDate.getTime() + (offset + localDate.getTimezoneOffset()) * 60000);
+        return jstDate.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' });
+    }
+
+    function getSourceIcon(source) {
+        const sourceMap = {
+            "Cointelegraph": { text: "CT", color: "#fabf2c" },
+            "Wublock": { text: "WU", color: "#1d9bf0" },
+            // Add more sources here
+        };
+
+        const iconData = sourceMap[source] || { text: "N/A", color: "gray" };
+
+        const icon = $('<span>')
+            .css({
+                display: 'inline-block',
+                backgroundColor: iconData.color,
+                borderRadius: '4px',
+                padding: '2px 4px',
+                marginLeft: '4px',
+                fontSize: '10px',
+                position: 'absolute',
+                right: '0',
+                bottom: '0',
+                fontWeight: '700',
+            })
+            .text(iconData.text);
+
+        return icon;
+    }
 
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.querySelector('.sidebar');
