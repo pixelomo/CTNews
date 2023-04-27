@@ -1,5 +1,6 @@
 import scrapy
 import datetime
+from app import app, db
 from articles.items import Article
 
 class WublockSpider(scrapy.Spider):
@@ -16,17 +17,26 @@ class WublockSpider(scrapy.Spider):
             if pubDate:
                 pubDate = datetime.datetime.fromisoformat(pubDate)
             title = article.xpath(".//div[contains(@class, 'tgme_widget_message_text')]/text()").get()
-            link = article.xpath(".//a[contains(@class, 'tgme_widget_message_link_preview')]/@href").get() or article.xpath(".//a[contains(@class, 'tgme_widget_message_bubble')]/@href").get()
+            link = article.xpath(".//a[contains(@class, 'tgme_widget_message_link_preview')]/@href").get() or article.xpath(".//a[contains(@class, 'tgme_widget_message_bubble')]/@href").get() or None
             html = article.get()
 
-            yield Article(
-                title=title,
-                pubDate=pubDate,
-                link=link,
-                text=None,
-                html=html,
-                source="WuBlockchain",
-            )
+            with app.app_context():
+                from app import Article as ArticleModel
+                existing_article = ArticleModel.query.filter_by(link=link).first()
+
+                if existing_article:
+                    print(f"Article with the same link already exists: {link}")
+                    return
+
+                yield Article(
+                    title=title,
+                    pubDate=pubDate,
+                    link=link,
+                    text=None,
+                    html=html,
+                    source="WuBlockchain",
+                )
+
 
 
 # https://www.odaily.news/newsflash
