@@ -91,6 +91,7 @@ class SaveArticleResource(Resource):
             title_translated=data["title_translated"],
             content_translated=data["content_translated"]
         )
+        print(f"Article to be saved: {article.__dict__}")
 
         try:
             db.session.add(article)

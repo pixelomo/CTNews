@@ -64,6 +64,7 @@ class ArticlesPipeline(object):
 
             # Translate the title
             translated_title = translate_with_gpt(item["title"])
+            print(f"Translated Title: {translated_title}")
 
             # Translate the HTML content
             content_translated = self.translate_html(item["html"], max_tokens)
