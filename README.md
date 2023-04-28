@@ -32,23 +32,22 @@ Our editors use ChatGPT to translate articles from Cointelegraph into Japanese. 
 - translate.py
 - translation_tasks.py
 
-
 ## Useful commands
 
 ### Get db schema
-SELECT column_name, data_type, is_nullable
-FROM information_schema.columns
-WHERE table_name = 'article';
+- SELECT column_name, data_type, is_nullable
+- FROM information_schema.columns
+- WHERE table_name = 'article';
 
 ### Heroku
-heroku logs --tail --app gentle-earth-02543
-heroku builds -a gentle-earth-02543
-heroku builds:cancel <buildID> -a gentle-earth-02543
-heroku pg:killall
-heroku config:set OPENAI_API_KEY=<key> -a gentle-earth-02543
-heroku run:detached -t python remove_duplicates.py -a gentle-earth-02543
+- heroku logs --tail --app gentle-earth-02543
+- heroku builds -a gentle-earth-02543
+- heroku builds:cancel <buildID> -a gentle-earth-02543
+- heroku pg:killall
+- heroku config:set OPENAI_API_KEY=<key> -a gentle-earth-02543
+- heroku run:detached -t python remove_duplicates.py -a gentle-earth-02543
 
 ### switch between development/production
-export FLASK_DEBUG=0
-export FLASK_DEBUG=1
+- export FLASK_DEBUG=0
+- export FLASK_DEBUG=1
 

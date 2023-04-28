@@ -21,20 +21,23 @@ class ArticlesPipeline(object):
         if current_chunk:
             chunks.append(" ".join(current_chunk))
 
-        return chunks
+        num_chunks = len(chunks)
+        return chunks, num_chunks
 
-    def translate_html(self, html, max_tokens):
+    def translate_html(self, html, max_tokens, brief, translated_title):
         soup = BeautifulSoup(html, "html.parser")
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
         for element in paragraphs:
             original_text = element.get_text()
-            chunks = self.split_text(original_text, max_tokens)
+            chunks, num_chunks = self.split_text(original_text, max_tokens)
             translated_chunks = []
 
-            for chunk in chunks:
+            for index, chunk in enumerate(chunks):
+                is_last_chunk = index == num_chunks - 1
+                is_not_first = index > 0
                 try:
-                    translated_chunk = translate_with_gpt(chunk)
+                    translated_chunk = translate_with_gpt(chunk, is_last_chunk, is_not_first, translated_title)
                     if translated_chunk is not None and translated_chunk.strip():
                         translated_chunk = translated_chunk.replace("翻訳・編集　コインテレグラフジャパン", "")
                         translated_chunks.append(translated_chunk)
@@ -54,36 +57,38 @@ class ArticlesPipeline(object):
     def process_item(self, item, spider):
         # Translate title
         title_translated = translate_title_with_gpt(item["title"])
-        item["title_translated"] = title_translated
 
-        # Check if the text field is not None
-        if item["text"]:
-            # Set max tokens for text translation
-            max_tokens = 5650
+        if title_translated is not None:
+            item["title_translated"] = title_translated
 
-            # Translate text
-            content_translated = self.translate_html(item["html"], max_tokens)
-            item["content_translated"] = content_translated
+            # Check if the text field is not None
+            if item["text"]:
+                # Set max tokens for text translation
+                max_tokens = 5650
 
-        # Save article to database
-        try:
-            article = Article(
-                title=item["title"],
-                title_translated=item["title_translated"],
-                pubDate=item["pubDate"],
-                link=item["link"],
-                text=item["text"] if item.get("text") else None,
-                html=item["html"],
-                content_translated=item["content_translated"],
-                source=item["source"],
-            )
-            self.session.add(article)
-            self.session.commit()
+                # Translate text
+                content_translated = self.translate_html(item["html"], max_tokens, brief, title_translated)
+                item["content_translated"] = content_translated
 
-        except SQLAlchemyError as e:
-            self.session.rollback()
-            spider.logger.error(f"Error saving article: {e}")
-            raise DropItem(f"Error saving article: {e}")
+            # Save article to database
+            try:
+                article = Article(
+                    title=item["title"],
+                    title_translated=item["title_translated"],
+                    pubDate=item["pubDate"],
+                    link=item["link"],
+                    text=item["text"] if item.get("text") else None,
+                    html=item["html"],
+                    content_translated=item["content_translated"],
+                    source=item["source"],
+                )
+                self.session.add(article)
+                self.session.commit()
 
-        return item
+            except SQLAlchemyError as e:
+                self.session.rollback()
+                spider.logger.error(f"Error saving article: {e}")
+                raise DropItem(f"Error saving article: {e}")
+
+            return item
 
