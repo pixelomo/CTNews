@@ -44,3 +44,6 @@ class ArticlesSpider(scrapy.Spider):
             "html": scraped_html,
             "source": "Cointelegraph"
         }
+
+# if url includes magazine scrapy fails to scrape any data since format is different
+# https://cointelegraph.com/magazine/

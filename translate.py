@@ -38,21 +38,22 @@ brief = (
 
 # Initialize the conversation with the briefing
 conversation = [{"role": "system", "content": brief}]
-previous_chunk = ""
+# previous_chunk = ""
 
 def translate_with_gpt(text, is_last_chunk, is_not_first, translated_title):
-    global conversation, previous_chunk, brief
+    global conversation
+    # global conversation, previous_chunk, brief
 
     try:
-        prompt = ""
-        if is_not_first:
-            prompt += f"\n\continue writing in a cohesive style, following on from the last paragraph of the previous chunk:{previous_chunk}"
-        if is_last_chunk:
-            prompt += "\n\write a conclusion to the article"
-        prompt += f"\n\n{text}"
+        # prompt = ""
+        # if is_not_first:
+        #     prompt += f"\n\continue writing in a cohesive style, following on from the last paragraph of the previous chunk:{previous_chunk}"
+        # if is_last_chunk:
+        #     prompt += "\n\write a conclusion to the article"
+        # prompt += f"\n\n{text}"
 
         # Add the prompt to the conversation
-        conversation.append({"role": "user", "content": prompt})
+        conversation.append({"role": "user", "content": text})
 
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -68,10 +69,10 @@ def translate_with_gpt(text, is_last_chunk, is_not_first, translated_title):
         print(f"Translated Text: {translated_text}")
 
         # Clear the conversation, except for the briefing
-        conversation = [{"role": "system", "content": brief}]
+        # conversation = [{"role": "system", "content": brief}]
 
         # Add the previous response to the conversation
-        previous_chunk = translated_text
+        # previous_chunk = translated_text
 
         return translated_text
 
@@ -101,11 +102,6 @@ def translate_title_with_gpt(text, target_language="Japanese"):
         print(response)
 
         translated_text = response.choices[0].message.content.strip()  # Update this line
-        # Add additional print statements for debugging
-        print("Response object:", response)
-        print("Choices object:", response.choices)
-        print("Choice object:", response.choices[0])
-        print("Content attribute:", response.choices[0].message.content)
 
         # Print debugging information
         print(f"Original Title: {text}")
