@@ -44,7 +44,7 @@ def translate_with_gpt(text, is_last_chunk, is_not_first, translated_title):
     global conversation, previous_chunk, brief
 
     try:
-        prompt = f"This is the title：{translated_title}:"
+        prompt = ""
         if is_not_first:
             prompt += f"\n\continue writing in a cohesive style, following on from the last paragraph of the previous chunk:{previous_chunk}"
         if is_last_chunk:
