@@ -46,6 +46,7 @@ Our editors use ChatGPT to translate articles from Cointelegraph into Japanese. 
 - heroku pg:killall
 - heroku config:set OPENAI_API_KEY=key -a gentle-earth-02543
 - heroku run:detached -t python remove_duplicates.py -a gentle-earth-02543
+- heroku ps:scale worker=0 --app gentle-earth-02543
 
 ### switch between development/production
 - export FLASK_DEBUG=0
