@@ -54,7 +54,7 @@ class ArticlesPipeline(object):
 
     #     return str(soup)
 
-    def translate_html(html, translated_title):
+    def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article"])
 
