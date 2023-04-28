@@ -82,7 +82,7 @@ class ArticlesPipeline(object):
         return str(soup)
 
 
-    def process_item(item, spider):
+    def process_item(self, item, spider):
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):
