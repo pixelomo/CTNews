@@ -34,7 +34,7 @@ class WublockSpider(scrapy.Spider):
                 "link": link,
                 "text": None,
                 "html": html,
-                "source": WuBlockchain",
+                "source": "WuBlockchain"
             }
 
 
