@@ -7,10 +7,10 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize the conversation with the briefing
-conversation = [{"role": "system", "content": brief}]
+# conversation = [{"role": "system", "content": brief}]
 # previous_chunk = ""
 
-def translate_with_gpt(text, is_last_chunk, is_not_first, translated_title):
+def translate_with_gpt(text, translated_title):
     # global conversation, previous_chunk, brief
     briefing = (
         "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
