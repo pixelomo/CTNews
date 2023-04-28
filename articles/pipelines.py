@@ -54,9 +54,9 @@ class ArticlesPipeline(object):
 
     #     return str(soup)
 
-    def translate_html(self, html, max_tokens, translated_title):
+    def translate_html(html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
-        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
+        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article"])
 
         original_texts = []
         for element in paragraphs:
@@ -82,7 +82,7 @@ class ArticlesPipeline(object):
         return str(soup)
 
 
-    def process_item(self, item, spider):
+    def process_item(item, spider):
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):
@@ -94,11 +94,9 @@ class ArticlesPipeline(object):
 
                     # Check if the text field is not None
                     if item["text"]:
-                        # Set max tokens for text translation
-                        max_tokens = 5650
 
                         # Translate text
-                        content_translated = self.translate_html(item["html"], max_tokens, title_translated)
+                        content_translated = translate_html(item["html"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
                         else:

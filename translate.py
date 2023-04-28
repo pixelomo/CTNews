@@ -60,7 +60,7 @@ def translate_with_gpt(text, translated_title):
                 {"role": "user", "content": text},
             ],
             max_tokens=5650,
-            temperature=0.9,
+            temperature=0.6,
             n=1,
         )
 
