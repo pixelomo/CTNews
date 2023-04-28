@@ -111,6 +111,7 @@ def translate_title_with_gpt(text, target_language="Japanese"):
         "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
         "そして以下の記事を上記の条件を守りながら和訳してください。\n"
     )
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
