@@ -41,7 +41,7 @@ conversation = [{"role": "system", "content": brief}]
 previous_chunk = ""
 
 def translate_with_gpt(text, is_last_chunk, is_not_first, translated_title):
-    global conversation, previous_chunk
+    global conversation, previous_chunk, brief
 
     try:
         prompt = f"This is the title：{translated_title}:"
