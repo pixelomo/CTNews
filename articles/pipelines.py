@@ -85,11 +85,11 @@ class ArticlesPipeline(object):
                     content_translated=item["content_translated"],
                     source=item["source"],
                 )
-                self.session.add(article)
-                self.session.commit()
+                db.session.add(article)
+                db.session.commit()
 
             except SQLAlchemyError as e:
-                self.session.rollback()
+                db.session.rollback()
                 spider.logger.error(f"Error saving article: {e}")
                 raise DropItem(f"Error saving article: {e}")
 
