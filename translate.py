@@ -57,7 +57,7 @@ def translate_with_gpt(text, translated_title):
             model="gpt-4",
             messages=[
                 {"role": "system", "content": briefing},
-                {"role": "user", "content": f"Rewrite this article in Japanese following our style and rules: {text}"}},
+                {"role": "user", "content": f"Rewrite this article in Japanese following our style and rules: {text}"},
             ],
             max_tokens=5650,
             temperature=0.9,
@@ -112,13 +112,12 @@ def translate_title_with_gpt(text, target_language="Japanese"):
         "そして以下の記事を上記の条件を守りながら和訳してください。\n"
     )
     try:
-        prompt = f"Rewrite the following title in {target_language} following our style and rules:\n{text}"
 
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": briefing},
-                {"role": "user", "content": prompt},
+                {"role": "user", "content": f"Rewrite the following title in {target_language} following our style and rules:\n{text}"},
             ],
             max_tokens=min(50, len(text)),
             temperature=0.9,
