@@ -24,7 +24,7 @@ class ArticlesPipeline(object):
         num_chunks = len(chunks)
         return chunks, num_chunks
 
-    def translate_html(self, html, max_tokens, brief, translated_title):
+    def translate_html(self, html, max_tokens, translated_title):
         soup = BeautifulSoup(html, "html.parser")
         paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
 
@@ -67,7 +67,7 @@ class ArticlesPipeline(object):
                 max_tokens = 5650
 
                 # Translate text
-                content_translated = self.translate_html(item["html"], max_tokens, brief, title_translated)
+                content_translated = self.translate_html(item["html"], max_tokens, title_translated)
                 if content_translated is not None:
                     item["content_translated"] = content_translated
                 else:
