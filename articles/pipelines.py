@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup, NavigableString
 from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 
 class ArticlesPipeline(object):
     def split_text(self, text, max_tokens):
@@ -68,7 +68,10 @@ class ArticlesPipeline(object):
 
                 # Translate text
                 content_translated = self.translate_html(item["html"], max_tokens, brief, title_translated)
-                item["content_translated"] = content_translated
+                if content_translated is not None:
+                    item["content_translated"] = content_translated
+                else:
+                    raise DropItem("Missing content_translated")
 
             # Save article to database
             try:
