@@ -84,23 +84,27 @@ class ArticlesPipeline(object):
 
     def process_item(self, item, spider):
         with app.app_context():
-            # Translate title
-            title_translated = translate_title_with_gpt(item["title"])
+            # Check if the title field is not None
+            if item.get("title"):
+                # Translate title
+                title_translated = translate_title_with_gpt(item["title"])
 
-            if title_translated is not None:
-                item["title_translated"] = title_translated
+                if title_translated is not None:
+                    item["title_translated"] = title_translated
 
-                # Check if the text field is not None
-                if item["text"]:
-                    # Set max tokens for text translation
-                    max_tokens = 5650
+                    # Check if the text field is not None
+                    if item["text"]:
+                        # Set max tokens for text translation
+                        max_tokens = 5650
 
-                    # Translate text
-                    content_translated = self.translate_html(item["html"], max_tokens, title_translated)
-                    if content_translated is not None:
-                        item["content_translated"] = content_translated
-                    else:
-                        raise DropItem("Missing content_translated")
+                        # Translate text
+                        content_translated = self.translate_html(item["html"], max_tokens, title_translated)
+                        if content_translated is not None:
+                            item["content_translated"] = content_translated
+                        else:
+                            raise DropItem("Missing content_translated")
+            else:
+                raise DropItem("Missing title")
 
                 # Save article to database
                 try:
