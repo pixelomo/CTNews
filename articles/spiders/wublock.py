@@ -29,12 +29,12 @@ class WublockSpider(scrapy.Spider):
                     return
 
             yield {
-                "title"=title,
-                "pubDate"=pubDate,
-                "link"=link,
-                "text"=None,
-                "html"=html,
-                "source"="WuBlockchain",
+                "title": title,
+                "pubDate": pubDate,
+                "link": link,
+                "text": None,
+                "html": html,
+                "source": WuBlockchain",
             }
 
 

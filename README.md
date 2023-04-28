@@ -42,9 +42,9 @@ Our editors use ChatGPT to translate articles from Cointelegraph into Japanese. 
 ### Heroku
 - heroku logs --tail --app gentle-earth-02543
 - heroku builds -a gentle-earth-02543
-- heroku builds:cancel <buildID> -a gentle-earth-02543
+- heroku builds:cancel build-ID -a gentle-earth-02543
 - heroku pg:killall
-- heroku config:set OPENAI_API_KEY=<key> -a gentle-earth-02543
+- heroku config:set OPENAI_API_KEY=key -a gentle-earth-02543
 - heroku run:detached -t python remove_duplicates.py -a gentle-earth-02543
 
 ### switch between development/production
