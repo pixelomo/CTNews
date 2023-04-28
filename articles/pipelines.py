@@ -96,7 +96,7 @@ class ArticlesPipeline(object):
                     if item["text"]:
 
                         # Translate text
-                        content_translated = translate_html(item["html"], title_translated)
+                        content_translated = self.translate_html(item["html"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
                         else:
