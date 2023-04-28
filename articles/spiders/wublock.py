@@ -28,14 +28,14 @@ class WublockSpider(scrapy.Spider):
                     print(f"Article with the same link already exists: {link}")
                     return
 
-            yield Article(
-                title=title,
-                pubDate=pubDate,
-                link=link,
-                text=None,
-                html=html,
-                source="WuBlockchain",
-            )
+            yield {
+                "title"=title,
+                "pubDate"=pubDate,
+                "link"=link,
+                "text"=None,
+                "html"=html,
+                "source"="WuBlockchain",
+            }
 
 
 
