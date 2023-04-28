@@ -91,5 +91,5 @@ class ArticlesPipeline(object):
                 except IntegrityError as e:
                     db.session.rollback()
 
-                return item
+            return item
 
