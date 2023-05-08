@@ -76,7 +76,7 @@ def translate_with_gpt(text, translated_title, retries=3):
             translated_text = response.choices[0].message.content.strip()
             return translated_text
         except Exception as e:
-            if isinstance(e, openai.ApiError) and e.status_code == 524:
+            if isinstance(e, openai.OpenAIError) and e.status_code == 524:
                 time.sleep(1)
             else:
                 raise e
