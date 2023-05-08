@@ -75,8 +75,11 @@ def translate_with_gpt(text, translated_title, retries=3):
             print(response)
             translated_text = response.choices[0].message.content.strip()
             return translated_text
-        except openai.error.ApiTimeoutError:
-            time.sleep(1)
+        except Exception as e:
+            if isinstance(e, openai.ApiError) and e.status_code == 524:
+                time.sleep(1)
+            else:
+                raise e
     raise Exception("FAILED to translate text after multiple retries.")
 
 def translate_title_with_gpt(text, target_language="Japanese"):
