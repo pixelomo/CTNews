@@ -67,7 +67,7 @@ def translate_with_gpt(text, translated_title, retries=3):
                     {"role": "system", "content": briefing},
                     {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
                 ],
-                max_tokens=5450,
+                max_tokens=5000,
                 temperature=0.9,
                 n=1,
             )

@@ -13,7 +13,7 @@ class ArticlesSpider(scrapy.Spider):
         items = response.xpath("//item")
         for item in items:
             link = item.xpath("link/text()").get()
-            if link:
+            if link and "/magazine" not in link:
                 yield scrapy.Request(link, callback=self.parse_article, meta={
                     "title": item.xpath("title/text()").get(),
                     "pubDate": item.xpath("pubDate/text()").get(),
@@ -44,6 +44,3 @@ class ArticlesSpider(scrapy.Spider):
             "html": scraped_html,
             "source": "Cointelegraph"
         }
-
-# if url includes magazine scrapy fails to scrape any data since format is different - we should not scrape magazine articles
-# https://cointelegraph.com/magazine/
