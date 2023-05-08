@@ -2,16 +2,12 @@
 import openai
 import os
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Initialize the conversation with the briefing
-# conversation = [{"role": "system", "content": brief}]
-# previous_chunk = ""
-
-def translate_with_gpt(text, translated_title):
-    # global conversation, previous_chunk, brief
+def translate_with_gpt(text, translated_title, retries=3):
     briefing = (
         "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
         "今から仮想通貨に関する英文のニュース記事を、読みやすい日本語記事に翻訳編集してください。\n\n"
@@ -42,44 +38,46 @@ def translate_with_gpt(text, translated_title):
         "そして以下の記事を上記の条件を守りながら和訳してください。\n"
     )
 
-    try:
-        # prompt = ""
-        # if is_not_first:
-        #     prompt += f"\n\continue writing in a cohesive style, following on from the last paragraph of the previous chunk:{previous_chunk}"
-        # if is_last_chunk:
-        #     prompt += "\n\write a conclusion to the article"
-        # prompt += f"\n\n{text}"
+    # try:
+    #     response = openai.ChatCompletion.create(
+    #         model="gpt-4",
+    #         messages=[
+    #             {"role": "system", "content": briefing},
+    #             {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
+    #         ],
+    #         max_tokens=5450,
+    #         temperature=0.9,
+    #         n=1,
+    #     )
 
-        # Add the prompt to the conversation
-        # conversation.append({"role": "user", "content": f"Rewrite this article in Japanese following our style and rules: {text}"})
+    #     print(response)
+    #     translated_text = response.choices[0].message.content.strip()
 
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": briefing},
-                {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
-            ],
-            max_tokens=5450,
-            temperature=0.9,
-            n=1,
-        )
+    #     return translated_text
 
-        print(response)
+    # except openai.OpenAIError as e:
+    #     print(f"Error during API request: {e}")
+    #     return None
 
-        translated_text = response.choices[0].message.content.strip()
-        # print(f"Translated Text: {translated_text}")
+    for _ in range(retries):
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": briefing},
+                    {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
+                ],
+                max_tokens=5450,
+                temperature=0.9,
+                n=1,
+            )
 
-        # Clear the conversation, except for the briefing
-        # conversation = [{"role": "system", "content": brief}]
-
-        # Add the previous response to the conversation
-        # previous_chunk = translated_text
-
-        return translated_text
-
-    except openai.OpenAIError as e:
-        print(f"Error during API request: {e}")
-        return None
+            print(response)
+            translated_text = response.choices[0].message.content.strip()
+            return translated_text
+        except openai.error.ApiTimeoutError:
+            time.sleep(1)
+    raise Exception("FAILED to translate text after multiple retries.")
 
 def translate_title_with_gpt(text, target_language="Japanese"):
     briefing = (

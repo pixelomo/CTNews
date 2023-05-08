@@ -67,7 +67,7 @@ class ArticlesPipeline(object):
         try:
             translated_full_text = translate_with_gpt(original_full_text, translated_title)
             if translated_full_text is not None and translated_full_text.strip():
-                # translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
+                translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
                 translated_paragraphs = translated_full_text.split("\n")
 
                 for element, translated_text in zip(paragraphs, translated_paragraphs):
@@ -93,7 +93,6 @@ class ArticlesPipeline(object):
 
                     # Check if the text field is not None
                     if item["text"]:
-
                         # Translate text
                         content_translated = self.translate_html(item["html"], title_translated)
                         if content_translated is not None:
