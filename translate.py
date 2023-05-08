@@ -38,49 +38,26 @@ def translate_with_gpt(text, translated_title, retries=3):
         "そして以下の記事を上記の条件を守りながら和訳してください。\n"
     )
 
-    # try:
-    #     response = openai.ChatCompletion.create(
-    #         model="gpt-4",
-    #         messages=[
-    #             {"role": "system", "content": briefing},
-    #             {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
-    #         ],
-    #         max_tokens=5450,
-    #         temperature=0.9,
-    #         n=1,
-    #     )
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": briefing},
+                {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
+            ],
+            max_tokens=5400,
+            temperature=0.9,
+            n=1,
+        )
 
-    #     print(response)
-    #     translated_text = response.choices[0].message.content.strip()
+        print(response)
+        translated_text = response.choices[0].message.content.strip()
 
-    #     return translated_text
+        return translated_text
 
-    # except openai.OpenAIError as e:
-    #     print(f"Error during API request: {e}")
-    #     return None
-
-    for _ in range(retries):
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": briefing},
-                    {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
-                ],
-                max_tokens=5000,
-                temperature=0.9,
-                n=1,
-            )
-
-            print(response)
-            translated_text = response.choices[0].message.content.strip()
-            return translated_text
-        except Exception as e:
-            if isinstance(e, openai.OpenAIError) and e.status_code == 524:
-                time.sleep(1)
-            else:
-                raise e
-    raise Exception("FAILED to translate text after multiple retries.")
+    except openai.OpenAIError as e:
+        print(f"Error during API request: {e}")
+        return None
 
 def translate_title_with_gpt(text, target_language="Japanese"):
     briefing = (
