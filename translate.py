@@ -57,7 +57,7 @@ def translate_with_gpt(text, translated_title):
             model="gpt-4",
             messages=[
                 {"role": "system", "content": briefing},
-                {"role": "user", "content": f"Following our writing style and rules translate this into Japanese: {text}"},
+                {"role": "user", "content": f"Following our writing style and rules translate this article into Japanese: {text}"},
             ],
             max_tokens=5650,
             temperature=0.9,
@@ -67,7 +67,7 @@ def translate_with_gpt(text, translated_title):
         print(response)
 
         translated_text = response.choices[0].message.content.strip()
-        print(f"Translated Text: {translated_text}")
+        # print(f"Translated Text: {translated_text}")
 
         # Clear the conversation, except for the briefing
         # conversation = [{"role": "system", "content": brief}]
@@ -117,7 +117,7 @@ def translate_title_with_gpt(text, target_language="Japanese"):
             model="gpt-4",
             messages=[
                 {"role": "system", "content": briefing},
-                {"role": "user", "content": f"Following our writing style and rules translate this into Japanese: {text}"},
+                {"role": "user", "content": f"Following our writing style and rules translate this title into Japanese: {text}"},
             ],
             max_tokens=min(50, len(text)),
             temperature=0.9,
@@ -140,6 +140,35 @@ def translate_title_with_gpt(text, target_language="Japanese"):
 
 
 if __name__ == "__main__":
-    text = brief + "OpenSea ‘insider trading’ trial kicked off in New York district court. The court case might have a decisive influence on the legal classification of NFTs. On April 24, the Southern district court of New York held the first jury hearing on the case against former OpenSea product manager Nathaniel Chastain, who’s being accused of insider trading with nonfungible tokens (NFTs). The allegations were filed by the United States Manhattan Attorney’s Office on May 31, 2022. Chastain is being indicted on two counts — wire fraud and money laundering. On the first count, the former employee of the largest NFT market presumably used his insider knowledge to secretly buy 45 NFTs shortly before their listing to sell them with a profit immediately afterward. The filing cites several examples of misconduct, such as the case with NFT “The Brawl 2.” In August 2021, through anonymous accounts, Chastain allegedly bought four of them “minutes before” they got featured on OpenSea and sold them within hours with 100% profit. In October 2022, Chastain’s lawyers unsuccessfully filed a motion to remove “insider trading” references from his charges. Chastain argued the use of “insider trading” to describe his alleged actions is “inflammatory,” as “insider trading” only applies to securities and not to NFTs. Prosecutors responded, noting that the allegation of “insider trading” can be used to reference multiple types of fraud in which someone with non-public knowledge uses it to trade assets. Related: SEC reaches ‘agreement in principle’ to resolve insider trading case of Coinbase product manager. Advertisement AI-Powered Indicator Sent Out 204 Winning Alerts in 2022. Click For Details >>>. As the term “insider trading” had previously not been used in reference to cryptocurrencies or NFTs before Chastain’s charges, the outcome of the trial, which is expected to last several weeks, might have a major influence on the legal classification of NFTs. In 2022, former U.S. Securities and Exchange Commission lawyer Alma Angotti predicted that the case might see NFTs labeled as securities, as they could be considered one under the Howey test. In a recent commentary to Reuters, another former employee of the SEC, Philip Moustakis, expressed a similar concern:“If this case sticks, there is precedent that insider trading theory can be applied to any asset class.” In another important recent court case, crypto exchange Coinbase supported a motion to dismiss the case on insider trading against the brother of the platform’s former product manager, who’s been allegedly using insider knowledge to trade cryptocurrencies. Coinbase argues that the SEC had no jurisdiction to file a lawsuit, given the tokens in question do not pass the Howey test. Magazine: Best and worst countries for crypto taxes — Plus crypto tax tips"
-    translated_text = translate_with_gpt(text)
+    briefing = (
+        "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
+        "今から仮想通貨に関する英文のニュース記事を、読みやすい日本語記事に翻訳編集してください。\n\n"
+        "・全体的に、日本経済新聞ぽい文体にしてください。\n"
+        "・ですます調ではなく、である調で翻訳すること\n"
+        "・英文の固有名詞や人名はカタカナ表記に直すこと\n"
+        "・人名がでてきたときは初回は氏をつける。二回目以降は苗字だけにして氏をつける。\n"
+        "・ドル単位で表記されているUS$30,000のような数字は、以下のような形式に変換すること\n\n"
+        "3万ドル(約X円)\n"
+        "X＝現在のドル円為替レートで変換し表記\n\n"
+        "・CRYPTOを暗号資産でなく仮想通貨と翻訳すること\n"
+        "・ツイッターからの引用も、かぎかっこの中にいれてしっかり訳してください\n"
+        "・かぎかっこの前には句読点や、はいれない。\n"
+        "・直訳ではなく、新聞記事としての文体にすること\n"
+        "・一文の長さはなるべく90文字以内におさめる。\n"
+        "・述という漢字は「のべる」という言葉においては使わないこと\n"
+        "・述べている、ではなく、だとという。、としてもよい。\n"
+        "・本日ではなく、今日と訳する。\n"
+        "・である、でなく、だ、を優先して使ってください。\n"
+        "・であるという語尾をなるべく使わないようにしてください\n"
+        "・のべた、を一度つかったら、そのあとは、とした、と語った、など違った表現の語尾にしてください。\n"
+        "・80,321等の数字は8万321と変換する\n"
+        "・80,321等の数字は80321とし、,を入れない\n"
+        "・ETHはETHとそのまま表記してください\n"
+        "・英語原文にあるRelated: は削除してください\n"
+        "・英語原文にあるMagazine: は削除してください\n"
+        "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
+        "そして以下の記事を上記の条件を守りながら和訳してください。\n"
+    )
+    text = briefing + "Following our writing style and rules translate this article into Japanese: Some swift down moves fail to make Bitcoin dislodge a familiar trading range, with one trader calling it “in limbo.“ Bitcoin saw fresh volatility on May 6 as low-liquidity weekend trading tested the mettle of its trading range. BTC/USD 1-hour candle chart (Bitstamp). Source: TradingView. Bitcoin “in limbo” despite volatility. Data from Cointelegraph Markets Pro and TradingView showed BTC/USD dropping by over $1,000, or 3%, in a matter of hours on the day. The largest cryptocurrency saw volatile conditions typical of weekend trading but could not exit a broader corridor in place for several weeks. Amid a lack of ammunition to either clear the $30,000 resistance or drop toward key trend lines near $25,000, BTC/USD frustrated market participants. “Bitcoin really is in limbo right now and doesn’t know what to do .. I am back out of a position and just waiting again for one side of this range to break to re enter,” popular trader Crypto Tony told Twitter followers. An accompanying chart showed potential targets in the event of a bearish breakdown. BTC/USD annotated chart. Source: Crypto Tony/Twitter. An additional analysis released earlier in the day repeated previous predictions of $32,000 coming into play should bullish momentum return. In separate coverage, fellow trader CryptoBullet described the day’s losses as “nothing special.” Advertisement The basic building blocks of DeFi and NFTs in one place - the ABCs of Crypto Report by Cointelegraph Research. “Final dip before the breakout,” part of the commentary argued, with a chart presenting BTC/USD in a narrowing wedge with a decision on exit trajectory due. BTC price bulls must clear $30,000. As ever, longer timeframes were a cause for more optimistic views. Related: Bitcoin trader eyes $63K BTC price for new Bollinger Bands ‘breakout’. Analyzing the weekly chart, analyst Gert van Lagen flagged the 200-week simple moving average (SMA) as the resistance line to clear next, with Bitcoin possibly completing a bullish inverse head and shoulders chart pattern. BTC/USD annotated chart. Source: Gert van Lagen/Twitter. Trader and investor CryptoAce highlighted a large weekly resistance zone for bulls to tackle. “Stay below and $24k is where price will be trading in some weeks imo,” part of an update on trading activity read on the day. Magazine: Unstablecoins: Depegging, bank runs and other risks loom. This article does not contain investment advice or recommendations. Every investment and trading move involves risk, and readers should conduct their own research when making a decision."
+    translated_text = translate_with_gpt(text, "BTCが不安定な週末に3％下落したため、次にこれらのビットコインの価格水準に注目する。")
     print(f"Final translated text: {translated_text}")
