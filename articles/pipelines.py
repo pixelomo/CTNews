@@ -99,8 +99,8 @@ class ArticlesPipeline(object):
                             item["content_translated"] = content_translated
                         else:
                             raise DropItem("Missing content_translated")
-            else:
-                raise DropItem("Missing title")
+                else:
+                    raise DropItem("Missing title")
 
                 # Save article to database
                 try:
