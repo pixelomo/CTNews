@@ -86,7 +86,6 @@ def translate_title_with_gpt(text, target_language="Japanese"):
         "・ETHはETHとそのまま表記してください\n"
         "・英語原文にあるRelated: は削除してください\n"
         "・英語原文にあるMagazine: は削除してください\n"
-        "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
         "そこで、上記の条件を守りながら、以下のタイトルを日本語に翻訳してください。\n"
     )
 
