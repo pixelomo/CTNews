@@ -2,7 +2,6 @@
 import openai
 import os
 from dotenv import load_dotenv
-import time
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -34,6 +33,7 @@ def translate_with_gpt(text, translated_title, retries=3):
         "・ETHはETHとそのまま表記してください\n"
         "・英語原文にあるRelated: は削除してください\n"
         "・英語原文にあるMagazine: は削除してください\n"
+        "・翻訳文は、少なくとも原文と同じ長さにする必要があります。\n"
         "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
         "そして以下の記事を上記の条件を守りながら和訳してください。\n"
     )
@@ -46,7 +46,8 @@ def translate_with_gpt(text, translated_title, retries=3):
                 {"role": "user", "content": f"{text}"},
             ],
             max_tokens=5400,
-            temperature=0.9,
+            temperature=0.7,
+            top_p=0.9,
             n=1,
         )
 
