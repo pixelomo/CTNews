@@ -60,7 +60,7 @@ $(document).ready(function () {
 
                     // Create the accordion button
                     $("<button>")
-                        .addClass("accordion-button collapsed")
+                        .addClass("accordion-button")
                         .attr("type", "button")
                         .attr("data-bs-toggle", "collapse")
                         .attr("data-bs-target", `#${source}-collapse`)

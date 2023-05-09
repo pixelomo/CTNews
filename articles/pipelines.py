@@ -60,7 +60,10 @@ class ArticlesPipeline(object):
 
         original_texts = []
         for element in paragraphs:
-            original_text = element.get_text(strip=True)
+            if element.name == "a":
+                original_text = f"<a href='{element['href']}'>{element.get_text(strip=True)}</a>"
+            else:
+                original_text = element.get_text(strip=True)
             original_texts.append(original_text)
 
         original_full_text = "\n".join(original_texts)
@@ -71,9 +74,22 @@ class ArticlesPipeline(object):
                 translated_paragraphs = translated_full_text.splitlines()
 
                 for element, translated_text in zip(paragraphs, translated_paragraphs):
-                    new_tag = soup.new_tag("p")
-                    new_tag.string = translated_text
-                    element.replace_with(new_tag)
+                    if element.name == "a":
+                        a_tag_start = translated_text.find("<a href=")
+                        if a_tag_start != -1:
+                            a_tag_end = translated_text.find("</a>") + 4
+                            new_tag = soup.new_tag("a", href=element["href"])
+                            new_tag.string = translated_text[a_tag_start + len("<a href='") : a_tag_end - len("</a>") - 1]
+                            element.replace_with(new_tag)
+                        else:
+                            new_tag = soup.new_tag("p")
+                            new_tag.string = translated_text
+                            element.replace_with(new_tag)
+                    else:
+                        new_tag = soup.new_tag("p")
+                        new_tag.string = translated_text
+                        element.replace_with(new_tag)
+
             else:
                 print(f"Empty translated text for original text: {original_full_text}")
         except Exception as e:
