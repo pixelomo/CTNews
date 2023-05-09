@@ -2,65 +2,22 @@ from bs4 import BeautifulSoup, NavigableString
 from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
+import copy
 
 class ArticlesPipeline(object):
-    # def split_text(self, text, max_tokens):
-    #     import re
-
-    #     sentences = re.split(r'(?<=[\.\?\!])\s+', text)
-    #     chunks = []
-    #     current_chunk = []
-
-    #     for sentence in sentences:
-    #         current_chunk.append(sentence)
-    #         if len(" ".join(current_chunk)) > max_tokens:
-    #             current_chunk.pop()  # Remove the last sentence that caused the overflow
-    #             chunks.append(" ".join(current_chunk))
-    #             current_chunk = [sentence]
-
-    #     if current_chunk:
-    #         chunks.append(" ".join(current_chunk))
-
-    #     num_chunks = len(chunks)
-    #     return chunks, num_chunks
-
-    # def translate_html(self, html, max_tokens, translated_title):
-    #     soup = BeautifulSoup(html, "html.parser")
-    #     paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s"])
-
-    #     for element in paragraphs:
-    #         original_text = element.get_text()
-    #         chunks, num_chunks = self.split_text(original_text, max_tokens)
-    #         translated_chunks = []
-
-    #         for index, chunk in enumerate(chunks):
-    #             is_last_chunk = index == num_chunks - 1
-    #             is_not_first = index > 0
-    #             try:
-    #                 translated_chunk = translate_with_gpt(chunk, is_last_chunk, is_not_first, translated_title)
-    #                 if translated_chunk is not None and translated_chunk.strip():
-    #                     translated_chunk = translated_chunk.replace("翻訳・編集　コインテレグラフジャパン", "")
-    #                     translated_chunks.append(translated_chunk)
-    #                 else:
-    #                     print(f"Empty translated chunk for original chunk: {chunk}")
-    #             except Exception as e:
-    #                 print(f"Error translating chunk: {chunk}. Error: {e}")
-
-    #         translated_text = " ".join(translated_chunks)
-    #         if translated_text:
-    #             new_tag = soup.new_tag("p")
-    #             new_tag.string = translated_text
-    #             element.replace_with(new_tag)
-
-    #     return str(soup)
 
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
-        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article"])
+        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article", "img", "iframe"])
 
         original_texts = []
+        placeholder_index = 0
         for element in paragraphs:
-            if element.name == "a":
+            if element.name == "iframe" or element.name == "img":
+                placeholder_text = f"[[{placeholder_index}]]"
+                original_texts.append(placeholder_text)
+                placeholder_index += 1
+            elif element.name == "a":
                 original_text = f"<a href='{element['href']}'>{element.get_text(strip=True)}</a>"
             else:
                 original_text = element.get_text(strip=True)
@@ -73,8 +30,13 @@ class ArticlesPipeline(object):
                 translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
                 translated_paragraphs = translated_full_text.splitlines()
 
+                placeholders = soup.find_all(["iframe", "img"])
                 for element, translated_text in zip(paragraphs, translated_paragraphs):
-                    if element.name == "a":
+                    if element.name == "iframe" or element.name == "img":
+                        new_tag = copy.copy(element)
+                        placeholder_text = f"[[{placeholders.index(element)}]]"
+                        translated_text = translated_text.replace(placeholder_text, str(new_tag))
+                    elif element.name == "a":
                         a_tag_start = translated_text.find("<a href=")
                         if a_tag_start != -1:
                             a_tag_end = translated_text.find("</a>") + 4

@@ -32,8 +32,7 @@ def translate_with_gpt(text, translated_title, retries=3):
         "・80,321等の数字は80321とし、,を入れない\n"
         "・ETHはETHとそのまま表記してください\n"
         "・翻訳文は、少なくとも原文と同じ長さにする必要があります。\n"
-        "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
-        "そして以下の記事を上記の条件を守りながら和訳してください。\n"
+        "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。"
     )
 
     try:
@@ -41,11 +40,11 @@ def translate_with_gpt(text, translated_title, retries=3):
             model="gpt-4",
             messages=[
                 {"role": "system", "content": briefing},
-                {"role": "user", "content": f"{text}"},
+                {"role": "user", "content": f"そして以下の記事を上記の条件を守りながら和訳してください。{text}"},
             ],
             max_tokens=5400,
-            temperature=0.6,
-            top_p=0.8,
+            temperature=0.7,
+            top_p=0.9,
             n=1,
         )
 
@@ -82,8 +81,7 @@ def translate_title_with_gpt(text, target_language="Japanese"):
         "・のべた、を一度つかったら、そのあとは、とした、と語った、など違った表現の語尾にしてください。\n"
         "・80,321等の数字は8万321と変換する\n"
         "・80,321等の数字は80321とし、,を入れない\n"
-        "・ETHはETHとそのまま表記してください\n"
-        "そこで、上記の条件を守りながら、以下のタイトルを日本語に翻訳してください。\n"
+        "・ETHはETHとそのまま表記してください"
     )
 
     try:
@@ -91,7 +89,7 @@ def translate_title_with_gpt(text, target_language="Japanese"):
             model="gpt-4",
             messages=[
                 {"role": "system", "content": briefing},
-                {"role": "user", "content": f"Following our writing style and rules translate this title into Japanese: {text}"},
+                {"role": "user", "content": f"そこで、上記の条件を守りながら、以下のタイトルを日本語に翻訳してください。{text}"},
             ],
             max_tokens=min(50, len(text)),
             temperature=0.9,
