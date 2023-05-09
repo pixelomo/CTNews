@@ -68,7 +68,7 @@ class ArticlesPipeline(object):
             translated_full_text = translate_with_gpt(original_full_text, translated_title)
             if translated_full_text is not None and translated_full_text.strip():
                 translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
-                translated_paragraphs = translated_full_text.split("\n\n")
+                translated_paragraphs = translated_full_text.splitlines()
 
                 for element, translated_text in zip(paragraphs, translated_paragraphs):
                     new_tag = soup.new_tag("p")
@@ -100,7 +100,7 @@ class ArticlesPipeline(object):
                         else:
                             raise DropItem("Missing content_translated")
                 else:
-                    raise DropItem("Missing title")
+                    raise DropItem("Title is None")
             else:
                 raise DropItem("Missing title")
 

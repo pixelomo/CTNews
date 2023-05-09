@@ -46,8 +46,8 @@ def translate_with_gpt(text, translated_title, retries=3):
                 {"role": "user", "content": f"{text}"},
             ],
             max_tokens=5400,
-            temperature=0.7,
-            top_p=0.9,
+            temperature=0.6,
+            top_p=0.8,
             n=1,
         )
 
