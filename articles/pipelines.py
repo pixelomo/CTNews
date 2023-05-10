@@ -25,7 +25,9 @@ class ArticlesPipeline(object):
 
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
-        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article", "img", "iframe", "figure", "figcaption", "a"])
+        for script in soup.find_all("script"):
+            script.decompose()
+        paragraphs = soup.find_all(["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article", "img", "iframe", "figure", "figcaption", "a"])
 
         original_texts = []
         for element in paragraphs:
@@ -37,20 +39,25 @@ class ArticlesPipeline(object):
 
         original_full_text = "\n".join(original_texts)
 
-        if len(original_texts) > 3:
-            summary = "\n".join(original_texts[:3]) + "\n"
-        else:
-            summary = "\n".join(original_texts) + "\n"
+        # if len(original_texts) > 3:
+        #     summary = "\n".join(original_texts[:3]) + "\n"
+        # else:
+        #     summary = "\n".join(original_texts) + "\n"
 
-        chunks = self.divide_into_chunks(original_full_text, 5100)  # 5400 minus some room for the summary
+        token_limit = 5400  # Updated token limit
+        # Check if the text is longer than the token limit before dividing it into chunks
+        if len(original_full_text) > token_limit:
+            chunks = self.divide_into_chunks(original_full_text, token_limit)
+        else:
+            chunks = [original_full_text]
 
         translated_chunks = []
         for chunk in chunks:
             try:
-                translated_chunk = translate_with_gpt(summary + chunk, translated_title)
+                translated_chunk = translate_with_gpt(chunk, translated_title)
                 if translated_chunk:
                     # Remove the translated summary from the beginning of the translated_chunk
-                    translated_chunk = "\n".join(translated_chunk.split('\n')[len(summary.split('\n')) - 1:])
+                    # translated_chunk = "\n".join(translated_chunk.split('\n')[len(summary.split('\n')) - 1:])
                     translated_chunks.append(translated_chunk)
                 else:
                     print(f"Empty translated text for chunk: {chunk}")
@@ -80,10 +87,9 @@ class ArticlesPipeline(object):
 
         return str(soup)
 
-
     def process_item(self, item, spider):
         print("process_item called")
-        print(item)
+        # print(item)
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):

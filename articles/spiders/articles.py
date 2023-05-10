@@ -28,12 +28,6 @@ class ArticlesSpider(scrapy.Spider):
         scraped_html = response.css(".post-content").get()
         scraped_text = "".join(response.css(".post-content *::text").getall())
 
-        print("scraped title:", scraped_title)
-        print("link:", scraped_link)
-        print("pubDate:", scraped_pubDate)
-        print("html:", scraped_html)
-        print("text:", scraped_text)
-
         yield {
             "title": scraped_title,
             "pubDate": scraped_pubDate,
