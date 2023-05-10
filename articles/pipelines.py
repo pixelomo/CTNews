@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup, NavigableString
 from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
+import os
 
 class ArticlesPipeline(object):
     def divide_into_chunks(self, text, max_chunk_size):
@@ -24,7 +25,7 @@ class ArticlesPipeline(object):
 
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
-        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article", "img", "iframe"])
+        paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article", "img", "iframe", "figure", "figcaption", "a"])
 
         original_texts = []
         for element in paragraphs:
@@ -91,9 +92,11 @@ class ArticlesPipeline(object):
                     item["title_translated"] = title_translated
 
                     # Check if the text field is not None
-                    if item["text"]:
+
+                    if item.get("text"):
                         # Translate text
-                        content_translated = self.translate_html(item["html"], title_translated)
+                        # content_translated = self.translate_html(item["html"], title_translated)
+                        content_translated = translate_with_gpt(item["html"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
                         else:
@@ -104,21 +107,22 @@ class ArticlesPipeline(object):
                 raise DropItem("Missing title")
 
             # Save article to database
-            try:
-                article = Article(
-                    title=item["title"],
-                    title_translated=item["title_translated"],
-                    pubDate=item["pubDate"],
-                    link=item["link"],
-                    text=item["text"] if item.get("text") else None,
-                    html=item["html"],
-                    content_translated=item.setdefault("content_translated", None),
-                    source=item["source"],
-                )
-                db.session.add(article)
-                db.session.commit()
-            except IntegrityError as e:
-                db.session.rollback()
+            if os.environ.get('APP_ENV') != 'test':
+                try:
+                    article = Article(
+                        title=item["title"],
+                        title_translated=item["title_translated"],
+                        pubDate=item["pubDate"],
+                        link=item["link"],
+                        text=item["text"] if item.get("text") else None,
+                        html=item["html"],
+                        content_translated=item.setdefault("content_translated", None),
+                        source=item["source"],
+                    )
+                    db.session.add(article)
+                    db.session.commit()
+                except IntegrityError as e:
+                    db.session.rollback()
 
             return item
 
