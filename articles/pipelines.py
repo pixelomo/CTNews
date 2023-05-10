@@ -81,8 +81,9 @@ class ArticlesPipeline(object):
         return str(soup)
 
 
-    def process_item(self, item):
-        print("process_item called")  # Add this line
+    def process_item(self, item, spider):
+        print("process_item called")
+        print(item)
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):
