@@ -81,7 +81,8 @@ class ArticlesPipeline(object):
         return str(soup)
 
 
-    def process_item(self, item, spider):
+    def process_item(self, item):
+        print("process_item called")  # Add this line
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):
@@ -92,18 +93,21 @@ class ArticlesPipeline(object):
                     item["title_translated"] = title_translated
 
                     # Check if the text field is not None
-
                     if item.get("text"):
                         # Translate text
-                        # content_translated = self.translate_html(item["html"], title_translated)
-                        content_translated = translate_with_gpt(item["html"], title_translated)
+                        content_translated = self.translate_html(item["html"], title_translated)
+                        # content_translated = translate_with_gpt(item["html"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
+                            print(f"Content Translated: {item['content_translated']}")
                         else:
+                            print("Dropping item: Missing content_translated")  # Add this line
                             raise DropItem("Missing content_translated")
                 else:
+                    print("Dropping item: Title is None")
                     raise DropItem("Title is None")
             else:
+                print("Dropping item: Missing title")
                 raise DropItem("Missing title")
 
             # Save article to database

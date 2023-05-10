@@ -49,7 +49,7 @@ def translate_with_gpt(text, translated_title, retries=3):
             n=1,
         )
 
-        print(response)
+        # print(response)
         translated_text = response.choices[0].message.content.strip()
 
         return translated_text
@@ -98,13 +98,13 @@ def translate_title_with_gpt(text, target_language="Japanese"):
             n=1,
         )
 
-        print(response)
+        # print(response)
 
         translated_text = response.choices[0].message.content.strip()  # Update this line
 
         # Print debugging information
-        print(f"Original Title: {text}")
-        print(f"Translated Title: {translated_text}")
+        # print(f"Original Title: {text}")
+        # print(f"Translated Title: {translated_text}")
 
         return translated_text
 
@@ -114,6 +114,6 @@ def translate_title_with_gpt(text, target_language="Japanese"):
 
 
 if __name__ == "__main__":
-    text = "<div class=\"post-content\" data-v-6da673f8><p><a href=\"https://cointelegraph.com/explained/what-are-bitcoin-ordinals\">Bitcoin ordinals</a> — also known as Bitcoin NFTs — have made their way into the limelight of the Web3 space, as more marketplaces continue to adopt and offer digital assets. </p><p>On May 9, the cryptocurrency exchange Binance announced that it will support Bitcoin ordinals on its NFT marketplace in late May. The development will expand Binance’s multichain NFT ecosystem to include the Bitcoin network. </p><p>Previously the Binance NFT market integrated with other decentralized networks, including BNB Chain, Ethereum and Polygon. </p><p>Mayur Kamat, the head of product at Binance, commented on broadening the offerings in the marketplace and Bitcoin’s (<a href=\"https://cointelegraph.com/bitcoin-price\">BTC</a>) crypto legacy: </p><blockquote>“Bitcoin is the OG of crypto.”</blockquote><p>The update allows Binance users to purchase and trade Bitcoin ordinals from existing Binance accounts. According to the announcement, the update will also include royalty support and “additional revenue generating opportunities” for those <a href=\"https://cointelegraph.com/news/how-to-create-and-sell-bitcoin-nfts\">creating Bitcoin ordinals</a>.</p><p><strong><em>Related:</em></strong><a href=\"https://cointelegraph.com/news/bitcoin-metrics-to-the-moon-ath-for-hash-rate-daily-transactions-and-ordinals\"><strong><em> Bitcoin metrics to the moon: ATH for hash rate, daily transactions and Ordinals</em></strong></a></p><p>Prior to Binance’s announcement, the cryptocurrency exchange OKX similarly announced in late April that it was bringing Bitcoin ordinals to its marketplace and wallet ecosystem. Initially, OKX users could view and store ordinals using their accounts, with the option to mint ordinals being hinted at in the future, according to Haider Rafique, the chief marketing officer at OKX.</p><p>The Bitcoin NFTs are also available on marketplaces <a href=\"https://cointelegraph.com/news/magic-eden-launches-marketplace-for-bitcoin-ordinals\">such as Magic Eden</a>, which integrated the feature back in March. </p><figure><img src=\"https://s3.cointelegraph.com/uploads/2023-05/a7ba5c76-d101-4213-a30c-4aed06ab433b.JPG\"><figcaption style=\"text-align: center;\"><em>Ordinals reach 3 million inscriptions. Source: Dune</em></figcaption></figure><p>According to recent data, <a href=\"https://cointelegraph.com/news/bitcoin-ordinals-daily-inscriptions-surge-due-to-brc-20-tokens\">inscriptions of Bitcoin ordinals</a> have been on the rise in recent months. On April 2, Bitcoin ordinals reached 58,179 inscriptions — up 83.5% from the previous month. However, on May 1, the total number of Bitcoin ordinal inscriptions skyrocketed to exceed 3 million. </p><p>Nonetheless, they remain<a href=\"https://cointelegraph.com/news/2-reasons-why-bitcoin-ordinals-are-positive-for-the-btc-grayscale\"> a controversial topic</a> within the crypto community, with Bitcoin maximalists criticizing them for deviating from Bitcoin’s original peer-to-peer ethos.</p><p><strong><em>Magazine: </em></strong><a href=\"https://cointelegraph.com/magazine/zkrollups-endgame-scaling-blockchains-polygon-miden-founder/\"><strong><em>ZK-rollups are ‘the endgame’ for scaling blockchains: Polygon Miden founder</em></strong></a></p><template data-name=\"subscription_form\" data-type=\"crypto_biz\"></template></div>"
+    text = "Bitcoin ordinals — also known as Bitcoin NFTs — have made their way into the limelight of the Web3 space, as more marketplaces continue to adopt and offer digital assets. On May 9, the cryptocurrency exchange Binance announced that it will support Bitcoin ordinals on its NFT marketplace in late May. The development will expand Binance’s multichain NFT ecosystem to include the Bitcoin network. Previously the Binance NFT market integrated with other decentralized networks, including BNB Chain, Ethereum and Polygon. Mayur Kamat, the head of product at Binance, commented on broadening the offerings in the marketplace and Bitcoin’s (BTC) crypto legacy: “Bitcoin is the OG of crypto.”The update allows Binance users to purchase and trade Bitcoin ordinals from existing Binance accounts. According to the announcement, the update will also include royalty support and “additional revenue generating opportunities” for those creating Bitcoin ordinals.Related: Bitcoin metrics to the moon: ATH for hash rate, daily transactions and OrdinalsPrior to Binance’s announcement, the cryptocurrency exchange OKX similarly announced in late April that it was bringing Bitcoin ordinals to its marketplace and wallet ecosystem. Initially, OKX users could view and store ordinals using their accounts, with the option to mint ordinals being hinted at in the future, according to Haider Rafique, the chief marketing officer at OKX.The Bitcoin NFTs are also available on marketplaces such as Magic Eden, which integrated the feature back in March. Ordinals reach 3 million inscriptions. Source: DuneAccording to recent data, inscriptions of Bitcoin ordinals have been on the rise in recent months. On April 2, Bitcoin ordinals reached 58,179 inscriptions — up 83.5% from the previous month. However, on May 1, the total number of Bitcoin ordinal inscriptions skyrocketed to exceed 3 million. Nonetheless, they remain a controversial topic within the crypto community, with Bitcoin maximalists criticizing them for deviating from Bitcoin’s original peer-to-peer ethos.Magazine: ZK-rollups are ‘the endgame’ for scaling blockchains: Polygon Miden founder"
     translated_text = translate_with_gpt(text, "BTCが不安定な週末に3％下落したため、次にこれらのビットコインの価格水準に注目する。")
     print(f"Final translated text: {translated_text}")
