@@ -118,22 +118,22 @@ class ArticlesPipeline(object):
                 raise DropItem("Missing title")
 
             # Save article to database
-            if os.environ.get('APP_ENV') != 'test':
-                try:
-                    article = Article(
-                        title=item["title"],
-                        title_translated=item["title_translated"],
-                        pubDate=item["pubDate"],
-                        link=item["link"],
-                        text=item["text"] if item.get("text") else None,
-                        html=item["html"],
-                        content_translated=item.setdefault("content_translated", None),
-                        source=item["source"],
-                    )
-                    db.session.add(article)
-                    db.session.commit()
-                except IntegrityError as e:
-                    db.session.rollback()
+            # if os.environ.get('APP_ENV') != 'test':
+            try:
+                article = Article(
+                    title=item["title"],
+                    title_translated=item["title_translated"],
+                    pubDate=item["pubDate"],
+                    link=item["link"],
+                    text=item["text"] if item.get("text") else None,
+                    html=item["html"],
+                    content_translated=item.setdefault("content_translated", None),
+                    source=item["source"],
+                )
+                db.session.add(article)
+                db.session.commit()
+            except IntegrityError as e:
+                db.session.rollback()
 
             return item
 
