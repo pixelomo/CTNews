@@ -3,6 +3,7 @@ from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
 import os
+# from scrapy.exceptions import DropItem
 
 class ArticlesPipeline(object):
     def divide_into_chunks(self, text, max_chunk_size):
@@ -112,10 +113,10 @@ class ArticlesPipeline(object):
                             raise DropItem("Missing content_translated")
                 else:
                     print("Dropping item: Title is None")
-                    raise DropItem("Title is None")
+                    # raise DropItem("Title is None")
             else:
                 print("Dropping item: Missing title")
-                raise DropItem("Missing title")
+                # raise DropItem("Missing title")
 
             # Save article to database
             # if os.environ.get('APP_ENV') != 'test':
