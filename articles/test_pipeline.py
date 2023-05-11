@@ -17,7 +17,7 @@ def test_process_scraped_article():
     processed_article = pipeline.process_item(scraped_article, None)
 
     # Print the processed article
-    print(processed_article)
+    # print(processed_article)
 
 if __name__ == "__main__":
     test_process_scraped_article()

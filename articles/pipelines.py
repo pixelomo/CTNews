@@ -3,7 +3,6 @@ from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
 import os
-# from scrapy.exceptions import DropItem
 
 class ArticlesPipeline(object):
     def divide_into_chunks(self, text, max_chunk_size):
@@ -24,67 +23,73 @@ class ArticlesPipeline(object):
 
         return chunks
 
+    def is_child_of_any(self, element, elements):
+        for e in elements:
+            if element in e.descendants:
+                return True
+        return False
+
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
-        for script in soup.find_all("script"):
-            script.decompose()
-        paragraphs = soup.find_all(["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "em", "u", "s", "blockquote", "article", "img", "iframe", "figure", "figcaption", "a"])
+        # for script in soup.find_all("script"):
+        #     script.decompose()
+        # for tweet in soup.find_all("blockquote", class_="twitter-tweet"):
+        #     tweet.decompose()
+        for script in soup(["script"]):
+            script.extract()
+        paragraphs = soup.find_all(["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "li", "strong", "blockquote", "article", "a"])
 
         original_texts = []
         for element in paragraphs:
-            if element.name == "a":
-                original_text = f"<a href='{element['href']}'>{element.get_text(strip=True)}</a>"
-            else:
-                original_text = element.get_text(strip=True)
-            original_texts.append(original_text)
+            original_text = element.get_text()
+            if original_text.startswith("Related:") or original_text.startswith("Magazine:"):
+                continue
+            if self.is_child_of_any(element, paragraphs):
+                continue
+            # if element.name == "a":
+            #     original_text = f"&nbsp;<a href='{element['href']}'>{element.get_text(strip=True)}</a>&nbsp;"
+            # if element.name == "blockquote":
+            #     original_text = f'{element.get_text(strip=True)}'
+
+            # Replace double quotes with single quotes
+            original_text = original_text.replace('“', "'")
+            original_text = original_text.replace('”', "'")
+            original_text = original_text.replace('\n', " ")
+            # Only add the text to the list if it's not a duplicate
+            if original_text not in original_texts:
+                original_texts.append(original_text)
 
         original_full_text = "\n".join(original_texts)
 
-        # if len(original_texts) > 3:
-        #     summary = "\n".join(original_texts[:3]) + "\n"
-        # else:
-        #     summary = "\n".join(original_texts) + "\n"
+        print("START: \n" +original_full_text+ "\n :END")
 
-        token_limit = 5400  # Updated token limit
-        # Check if the text is longer than the token limit before dividing it into chunks
-        if len(original_full_text) > token_limit:
-            chunks = self.divide_into_chunks(original_full_text, token_limit)
-        else:
-            chunks = [original_full_text]
+        try:
+            translated_full_text = translate_with_gpt(original_full_text, translated_title)
+            if translated_full_text is not None and translated_full_text.strip():
+                translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
+                translated_paragraphs = translated_full_text.split("\n")
 
-        translated_chunks = []
-        for chunk in chunks:
-            try:
-                translated_chunk = translate_with_gpt(chunk, translated_title)
-                if translated_chunk:
-                    # Remove the translated summary from the beginning of the translated_chunk
-                    # translated_chunk = "\n".join(translated_chunk.split('\n')[len(summary.split('\n')) - 1:])
-                    translated_chunks.append(translated_chunk)
-                else:
-                    print(f"Empty translated text for chunk: {chunk}")
-            except Exception as e:
-                print(f"Error translating chunk: {chunk}. Error: {e}")
+                for element, translated_text in zip(paragraphs, translated_paragraphs):
+                    if element.name == "a":
+                        a_tag_start = translated_text.find("<a href=")
+                        if a_tag_start != -1:
+                            a_tag_end = translated_text.find("</a>") + 4
+                            new_tag = soup.new_tag("a", href=element["href"])
+                            new_tag.string = translated_text[a_tag_start + len("<a href='") : a_tag_end - len("</a>") - 1]
+                            element.replace_with(new_tag)
+                        else:
+                            new_tag = soup.new_tag("p")
+                            new_tag.string = translated_text
+                            element.replace_with(new_tag)
+                    else:
+                        new_tag = soup.new_tag("p")
+                        new_tag.string = translated_text
+                        element.replace_with(new_tag)
 
-        translated_full_text = "\n".join(translated_chunks)
-        translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
-        translated_paragraphs = translated_full_text.splitlines()
-
-        for element, translated_text in zip(paragraphs, translated_paragraphs):
-            if element.name == "a":
-                a_tag_start = translated_text.find("<a href=")
-                if a_tag_start != -1:
-                    a_tag_end = translated_text.find("</a>") + 4
-                    new_tag = soup.new_tag("a", href=element["href"])
-                    new_tag.string = translated_text[a_tag_start + len("<a href='") : a_tag_end - len("</a>") - 1]
-                    element.replace_with(new_tag)
-                else:
-                    new_tag = soup.new_tag("p")
-                    new_tag.string = translated_text
-                    element.replace_with(new_tag)
             else:
-                new_tag = soup.new_tag("p")
-                new_tag.string = translated_text
-                element.replace_with(new_tag)
+                print(f"Empty translated text for original text: {original_full_text}")
+        except Exception as e:
+            print(f"Error translating text: {original_full_text}. Error: {e}")
 
         return str(soup)
 
@@ -104,13 +109,12 @@ class ArticlesPipeline(object):
                     if item.get("text"):
                         # Translate text
                         content_translated = self.translate_html(item["html"], title_translated)
-                        # content_translated = translate_with_gpt(item["html"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
-                            print(f"Content Translated: {item['content_translated']}")
+                            # print(f"Content Translated: {item['content_translated']}")
                         else:
                             print("Dropping item: Missing content_translated")  # Add this line
-                            raise DropItem("Missing content_translated")
+                            # raise DropItem("Missing content_translated")
                 else:
                     print("Dropping item: Title is None")
                     # raise DropItem("Title is None")
@@ -119,22 +123,22 @@ class ArticlesPipeline(object):
                 # raise DropItem("Missing title")
 
             # Save article to database
-            # if os.environ.get('APP_ENV') != 'test':
-            try:
-                article = Article(
-                    title=item["title"],
-                    title_translated=item["title_translated"],
-                    pubDate=item["pubDate"],
-                    link=item["link"],
-                    text=item["text"] if item.get("text") else None,
-                    html=item["html"],
-                    content_translated=item.setdefault("content_translated", None),
-                    source=item["source"],
-                )
-                db.session.add(article)
-                db.session.commit()
-            except IntegrityError as e:
-                db.session.rollback()
+            if os.environ.get('APP_ENV') != 'test':
+                try:
+                    article = Article(
+                        title=item["title"],
+                        title_translated=item["title_translated"],
+                        pubDate=item["pubDate"],
+                        link=item["link"],
+                        text=item["text"] if item.get("text") else None,
+                        html=item["html"],
+                        content_translated=item.setdefault("content_translated", None),
+                        source=item["source"],
+                    )
+                    db.session.add(article)
+                    db.session.commit()
+                except IntegrityError as e:
+                    db.session.rollback()
 
             return item
 

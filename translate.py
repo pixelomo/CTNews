@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def translate_with_gpt(text, translated_title, retries=3):
+def translate_with_gpt(text, translated_title):
+    print('translating...')
     briefing = (
         "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
         "今から仮想通貨に関する英文のニュース記事を、読みやすい日本語記事に翻訳編集してください。\n\n"
@@ -49,8 +50,8 @@ def translate_with_gpt(text, translated_title, retries=3):
             n=1,
         )
 
-        # print(response)
         translated_text = response.choices[0].message.content.strip()
+        print(translated_text)
 
         return translated_text
 
