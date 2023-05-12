@@ -2,11 +2,14 @@
 import openai
 import os
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
+# openai.configuration.timeout = 900
 
-def translate_with_gpt(text, translated_title):
+def translate_with_gpt(text, translated_title, max_retries=3, wait_time=60):
+    retries = 0
     print('translating...')
     briefing = (
         "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
@@ -47,17 +50,28 @@ def translate_with_gpt(text, translated_title):
             max_tokens=5450,
             temperature=0.7,
             top_p=0.9,
+            request_timeout=900,
             n=1,
         )
 
         translated_text = response.choices[0].message.content.strip()
-        print(translated_text)
+        print("chunk: "+translated_text)
 
         return translated_text
 
     except openai.OpenAIError as e:
         print(f"Error during API request: {e}")
-        return None
+
+        if retries < max_retries - 1:
+            print(f"Waiting for {wait_time} seconds before retrying...")
+            time.sleep(wait_time)
+            retries += 1
+            print(f"Retry {retries}/{max_retries}")
+
+        else:
+            print(f"Failed after {max_retries} retries. Exiting.")
+            raise
+        # return None
 
 def translate_title_with_gpt(text, target_language="Japanese"):
     briefing = (

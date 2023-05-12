@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup, NavigableString
 from translate import translate_with_gpt, translate_title_with_gpt
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
+from itertools import islice
 import os
 
 class ArticlesPipeline(object):
@@ -30,19 +31,44 @@ class ArticlesPipeline(object):
         return False
 
     def translate_text(self, text, translated_title):
-        translated_text = translate_with_gpt(text, translated_title)
+        # Function to split the text into chunks
+        def split_text_by_chunks(text, chunk_size):
+            words = text.split()
+            for _ in range(0, len(words), chunk_size):
+                yield ' '.join(islice(words, chunk_size))
 
+        # Check if the text exceeds the token limit and chunk it accordingly
+        if len(text) > 5450:
+            chunks = list(split_text_by_chunks(text, 5450))
+        else:
+            chunks = [text]
+
+        translated_chunks = []
+
+        for i, chunk in enumerate(chunks):
+            context = ""
+            if i > 0:
+                last_sentence = translated_chunks[-1].rsplit("。", 1)[-2] + "。"
+                context = f"Based on this summary, continue writing this article cohesively: {last_sentence}"
+                chunk = context + chunk
+            translated_chunk = translate_with_gpt(chunk, translated_title)
+            translated_chunks.append(translated_chunk)
+
+        translated_text = " ".join(translated_chunks)
+
+        # Simple formatting
         sentences = translated_text.split("。")
-        formatted_text = ""
+        simple_formatted_text = "<p>"
         for i, sentence in enumerate(sentences):
-            formatted_text += sentence
+            simple_formatted_text += sentence
             if i % 2 == 1:
-                formatted_text += "。\n\n"
+                simple_formatted_text += "。</p>"
+                if i < len(sentences) - 1:
+                    simple_formatted_text += "<p>"
             else:
-                formatted_text += "。"
-        print(formatted_text)
+                simple_formatted_text += "。"
 
-        return formatted_text
+        return simple_formatted_text
 
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
@@ -127,7 +153,7 @@ class ArticlesPipeline(object):
                         content_translated = self.translate_text(item["text"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
-                            # print(f"Content Translated: {item['content_translated']}")
+                            print(f"Content Translated: {item['content_translated']}")
                         else:
                             print("Dropping item: Missing content_translated")  # Add this line
                             # raise DropItem("Missing content_translated")
