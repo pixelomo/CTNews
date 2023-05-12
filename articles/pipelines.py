@@ -29,6 +29,21 @@ class ArticlesPipeline(object):
                 return True
         return False
 
+    def translate_text(self, text, translated_title):
+        translated_text = translate_with_gpt(text, translated_title)
+
+        sentences = translated_text.split("。")
+        formatted_text = ""
+        for i, sentence in enumerate(sentences):
+            formatted_text += sentence
+            if i % 2 == 1:
+                formatted_text += "。\n\n"
+            else:
+                formatted_text += "。"
+        print(formatted_text)
+
+        return formatted_text
+
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
         # for script in soup.find_all("script"):
@@ -108,7 +123,8 @@ class ArticlesPipeline(object):
                     # Check if the text field is not None
                     if item.get("text"):
                         # Translate text
-                        content_translated = self.translate_html(item["html"], title_translated)
+                        # content_translated = self.translate_html(item["html"], title_translated)
+                        content_translated = self.translate_text(item["text"], title_translated)
                         if content_translated is not None:
                             item["content_translated"] = content_translated
                             # print(f"Content Translated: {item['content_translated']}")
