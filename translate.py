@@ -55,7 +55,7 @@ def translate_with_gpt(text, translated_title, max_retries=3, wait_time=60):
         )
 
         translated_text = response.choices[0].message.content.strip()
-        print("chunk: "+translated_text)
+        # print("chunk: "+translated_text)
 
         return translated_text
 

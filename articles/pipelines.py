@@ -4,6 +4,7 @@ from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
 from itertools import islice
 import os
+import re
 
 class ArticlesPipeline(object):
     def divide_into_chunks(self, text, max_chunk_size):
@@ -30,7 +31,18 @@ class ArticlesPipeline(object):
                 return True
         return False
 
+    def process_original_text(self, text):
+        text = re.sub(r'(?<=[a-z])([A-Z])', r'. \1', text)  # Insert full stop and space before uppercase letters between lowercase letters
+        text = re.sub(r'(?<=\s|\.)Related:.*?(?<=\w)(?=\s|\.|$)|(?<=\s|\.)Magazine:.*?(?<=\w)(?=\s|\.|$)', '', text)
+        return text.strip()
+
+    def wrap_paragraphs_in_tags(self, text):
+        paragraphs = text.split('\n\n')
+        wrapped_paragraphs = ['<p>{}</p>'.format(p) for p in paragraphs]
+        return '\n'.join(wrapped_paragraphs)
+
     def translate_text(self, text, translated_title):
+        # text = self.process_original_text(text)
         # Function to split the text into chunks
         def split_text_by_chunks(text, chunk_size):
             words = text.split()
@@ -46,29 +58,18 @@ class ArticlesPipeline(object):
         translated_chunks = []
 
         for i, chunk in enumerate(chunks):
-            context = ""
-            if i > 0:
-                last_sentence = translated_chunks[-1].rsplit("。", 1)[-2] + "。"
-                context = f"Based on this summary, continue writing this article cohesively: {last_sentence}"
-                chunk = context + chunk
+            # context = ""
+            # if i > 0:
+                # last_sentence = translated_chunks[-1].rsplit("。", 1)[-2] + "。"
+                # context = f"Based on this summary, continue writing this article cohesively: {last_sentence}"
+                # chunk = context + chunk
             translated_chunk = translate_with_gpt(chunk, translated_title)
             translated_chunks.append(translated_chunk)
 
         translated_text = " ".join(translated_chunks)
+        translated_text = self.wrap_paragraphs_in_tags(translated_text)
 
-        # Simple formatting
-        sentences = translated_text.split("。")
-        simple_formatted_text = "<p>"
-        for i, sentence in enumerate(sentences):
-            simple_formatted_text += sentence
-            if i % 2 == 1:
-                simple_formatted_text += "。</p>"
-                if i < len(sentences) - 1:
-                    simple_formatted_text += "<p>"
-            else:
-                simple_formatted_text += "。"
-
-        return simple_formatted_text
+        return translated_text
 
     def translate_html(self, html, translated_title):
         soup = BeautifulSoup(html, "html.parser")
