@@ -8,7 +8,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 # openai.configuration.timeout = 900
 
-def translate_with_gpt(text, translated_title, max_retries=3, wait_time=60):
+def translate_with_gpt(text, translated_title):
     retries = 0
     print('translating...')
     briefing = (
@@ -37,6 +37,7 @@ def translate_with_gpt(text, translated_title, max_retries=3, wait_time=60):
         "・ETHはETHとそのまま表記してください\n"
         "・翻訳文は、少なくとも原文と同じ長さにする必要があります。\n"
         "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
+        "・翻訳文は原文の語数と同じ長さにしてください。\n"
         "そして以下の記事を上記の条件を守りながら和訳してください。\n"
     )
 
@@ -48,8 +49,8 @@ def translate_with_gpt(text, translated_title, max_retries=3, wait_time=60):
                 {"role": "user", "content": text},
             ],
             max_tokens=5450,
-            temperature=0.7,
-            top_p=0.9,
+            temperature=0.8,
+            top_p=0.7,
             request_timeout=900,
             n=1,
         )
@@ -62,16 +63,16 @@ def translate_with_gpt(text, translated_title, max_retries=3, wait_time=60):
     except openai.OpenAIError as e:
         print(f"Error during API request: {e}")
 
-        if retries < max_retries - 1:
-            print(f"Waiting for {wait_time} seconds before retrying...")
-            time.sleep(wait_time)
-            retries += 1
-            print(f"Retry {retries}/{max_retries}")
+        # if retries < max_retries - 1:
+        #     print(f"Waiting for {wait_time} seconds before retrying...")
+        #     time.sleep(wait_time)
+        #     retries += 1
+        #     print(f"Retry {retries}/{max_retries}")
 
-        else:
-            print(f"Failed after {max_retries} retries. Exiting.")
-            raise
-        # return None
+        # else:
+        #     print(f"Failed after {max_retries} retries. Exiting.")
+        #     raise
+        return None
 
 def translate_title_with_gpt(text, target_language="Japanese"):
     briefing = (
