@@ -1,6 +1,8 @@
 import scrapy
 from articles.items import Article as ArticleItem
 from app import app, db
+from selenium import webdriver
+from scrapy.selector import Selector
 
 class CoindeskSpider(scrapy.Spider):
     name = "coindesk"
@@ -8,6 +10,9 @@ class CoindeskSpider(scrapy.Spider):
     start_urls = [
         'https://www.coindesk.com/arc/outboundfeeds/rss/',
     ]
+
+    def __init__(self):
+        self.driver = webdriver.Chrome()
 
     def parse(self, response):
         items = response.xpath("//item")
@@ -22,11 +27,16 @@ class CoindeskSpider(scrapy.Spider):
                 })
 
     def parse_article(self, response):
+        self.driver.get(response.url)
+        scrapy_selector = Selector(text=self.driver.page_source)
+
         scraped_title = response.meta["title"]
         scraped_link = response.url
         scraped_pubDate = response.meta["pubDate"]
-        scraped_html = response.css(".article-content").get()
-        scraped_text = "".join(response.css(".at-content-wrapper > .at-content-wrapper *::text").getall())
+
+        scraped_html_element = scrapy_selector.css(".at-content-wrapper > .at-content-wrapper")
+        scraped_html = scraped_html_element.get()
+        scraped_text = "".join(scraped_html_element.css("*::text").getall())
 
         yield {
             "title": scraped_title,
