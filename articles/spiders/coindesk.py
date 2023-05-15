@@ -33,7 +33,6 @@ class CoindeskSpider(scrapy.Spider):
         scraped_title = response.meta["title"]
         scraped_link = response.url
         scraped_pubDate = response.meta["pubDate"]
-
         scraped_html_element = scrapy_selector.css(".at-content-wrapper > .at-content-wrapper")
         scraped_html = scraped_html_element.get()
         scraped_text = "".join(scraped_html_element.css("*::text").getall())
