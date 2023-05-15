@@ -42,3 +42,4 @@ celery==5.2.3
 redis==4.1.4
 Flask-Migrate
 selenium==4.8.3
+requests-html==0.10.0
