@@ -7,7 +7,7 @@ class CoindeskSpider(scrapy.Spider):
     name = "coindesk"
     allowed_domains = ["coindesk.com"]
     start_urls = [
-        'https://www.coindesk.com/arc/outboundfeeds/rss/',
+        'https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml',
     ]
 
     def parse(self, response):

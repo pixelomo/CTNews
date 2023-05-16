@@ -48,7 +48,7 @@ def translate_with_gpt(text, translated_title):
                 {"role": "system", "content": briefing},
                 {"role": "user", "content": text},
             ],
-            max_tokens=5450,
+            max_tokens=5400,
             temperature=0.8,
             top_p=0.7,
             request_timeout=900,
