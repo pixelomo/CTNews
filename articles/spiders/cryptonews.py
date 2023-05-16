@@ -14,7 +14,6 @@ class CryptoNewsSpider(scrapy.Spider):
         title = response.css('.article__title::text').get().strip()
         link = response.css('.article__title::attr(href)').get()
         pubDate = response.css('.article__badge-date::attr(data-utctime)').get()
-
         if not self.article_exists(title, link):
             # Fetch the article content
             content_request = scrapy.Request(link, callback=self.parse_article_content)
