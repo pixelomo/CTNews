@@ -1,7 +1,6 @@
 import scrapy
 from articles.items import Article as ArticleItem
 from app import app, db
-from requests_html import HTMLSession
 
 class CoindeskSpider(scrapy.Spider):
     name = "coindesk"

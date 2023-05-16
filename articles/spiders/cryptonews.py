@@ -2,6 +2,7 @@ import scrapy
 import re
 from articles.items import Article as ArticleItem
 from app import app, db
+from urllib.parse import urljoin
 
 class CryptoNewsSpider(scrapy.Spider):
     name = "cryptonews"
@@ -13,10 +14,12 @@ class CryptoNewsSpider(scrapy.Spider):
     def parse(self, response):
         title = response.css('.article__title::text').get().strip()
         link = response.css('.article__title::attr(href)').get()
+        # Join the base URL with the extracted link
+        link = urljoin(response.url, link)
         pubDate = response.css('.article__badge-date::attr(data-utctime)').get()
         if not self.article_exists(title, link):
             # Fetch the article content
-            content_request = scrapy.Request(link, callback=self.parse_article_content)
+            content_request = scrapy.Request(link, callback=self.parse_article)
             content_request.meta['title'] = title
             content_request.meta['pubDate'] = pubDate
             content_request.meta['link'] = link
@@ -37,7 +40,7 @@ class CryptoNewsSpider(scrapy.Spider):
             scraped_text = '\n'.join(scraped_text_lines[1:])
         else:
             scraped_text = ""
-
+        print(scraped_text)
         yield {
             "title": scraped_title,
             "pubDate": scraped_pubDate,
