@@ -138,7 +138,7 @@ $(document).ready(function () {
             "Cointelegraph": { text: "CT", color: "#fabf2c" },
             "Wublock": { text: "WU", color: "#1d9bf0" },
             "Coindesk": { text: "CD", color: "#00d4a1" },
-            // Add more sources here
+            "CryptoNews": { text: "CN", color: "#bc1f3b" },
         };
 
         const iconData = sourceMap[source] || { text: "N/A", color: "gray" };
