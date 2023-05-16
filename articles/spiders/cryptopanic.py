@@ -23,7 +23,7 @@ class CryptoPanicSpider(scrapy.Spider):
                     'pubDate': pub_date,
                     'link': link,
                     "source": source,
-                }
+                })
 
     def parse_article(self, response):
         scraped_title = response.meta["title"]
