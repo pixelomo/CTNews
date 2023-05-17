@@ -28,7 +28,6 @@ class CoindeskSpider(scrapy.Spider):
         scraped_html = response.css("article div:nth-of-type(2)").get()
         scraped_text = "".join(response.css("article div:nth-of-type(2) *::text").getall())
         # print("<---------------------------------scraped_text------------------------------------------->")
-        # print(scraped_title)
         # print(scraped_text)
         # print("<---------------------------------scraped_text------------------------------------------->")
         yield {

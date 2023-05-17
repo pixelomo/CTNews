@@ -137,7 +137,7 @@ $(document).ready(function () {
         const sourceMap = {
             "Cointelegraph": { text: "CT", color: "#fabf2c" },
             "Wublock": { text: "WU", color: "#1d9bf0" },
-            "Coindesk": { text: "CD", color: "#00d4a1" },
+            "CoinDesk": { text: "CD", color: "#00d4a1" },
             "CryptoNews": { text: "CN", color: "#9baaff" },
         };
 
