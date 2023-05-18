@@ -8,29 +8,34 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-# Check if the app is running on Heroku by looking for the 'DYNO' environment variable
-on_heroku = 'DYNO' in os.environ
-
-if on_heroku:
-    chrome_bin = os.environ.get('GOOGLE_CHROME_BIN', 'chromedriver')
-    chrome_driver_path = os.environ.get('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
-else:
-    chrome_driver_path = '/usr/local/bin/webdrivers/chromedriver'
-    chrome_bin = None
-
-options = Options()
-options.headless = True
-if chrome_bin:
-    options.binary_location = chrome_bin
-
-driver = webdriver.Chrome(executable_path=chrome_driver_path, options=options)
-
 class CoindeskSpider(scrapy.Spider):
     name = "coindesk"
     allowed_domains = ["coindesk.com"]
     start_urls = [
         'https://www.coindesk.com/arc/outboundfeeds/rss/',
     ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Check if the app is running on Heroku by looking for the 'DYNO' environment variable
+        on_heroku = 'DYNO' in os.environ
+
+        if on_heroku:
+            chrome_bin = os.environ.get('GOOGLE_CHROME_SHIM', None)
+            chrome_driver_path = os.environ.get('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
+        else:
+            chrome_driver_path = '/usr/local/bin/webdrivers/chromedriver'
+            chrome_bin = None
+
+        options = Options()
+        options.headless = True
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+
+        if chrome_bin:
+            options.binary_location = chrome_bin
+
+        self.driver = webdriver.Chrome(executable_path=chrome_driver_path, options=options)
 
     def parse(self, response):
         items = response.xpath("//item")
@@ -49,12 +54,12 @@ class CoindeskSpider(scrapy.Spider):
         scraped_link = response.url
         scraped_pubDate = response.meta["pubDate"]
 
-        driver.get(scraped_link)
+        self.driver.get(scraped_link)
 
         time.sleep(5)
 
-        scraped_html = driver.find_element(By.CSS_SELECTOR,"article div:nth-of-type(2)").get_attribute("outerHTML")
-        scraped_text = "".join([elem.text for elem in driver.find_elements(By.CSS_SELECTOR,"article div:nth-of-type(2) *")])
+        scraped_html = self.driver.find_element(By.CSS_SELECTOR,"article div:nth-of-type(2)").get_attribute("outerHTML")
+        scraped_text = "".join([elem.text for elem in self.driver.find_elements(By.CSS_SELECTOR,"article div:nth-of-type(2) *")])
 
         # Remove the h1 tag from the scraped_html and scraped_text
         scraped_html = re.sub(r'<h1[^>]*>.*?</h1>', '', scraped_html)
@@ -78,7 +83,7 @@ class CoindeskSpider(scrapy.Spider):
         }
 
     def closed(self, reason):
-        driver.quit()
+        self.driver.quit()
 
     def article_exists(self, title, link):
         with app.app_context():
