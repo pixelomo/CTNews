@@ -40,7 +40,6 @@ class CryptoNewsSpider(scrapy.Spider):
             scraped_text = '\n'.join(scraped_text_lines[1:])
         else:
             scraped_text = ""
-        print(scraped_text)
         yield {
             "title": scraped_title,
             "pubDate": scraped_pubDate,
