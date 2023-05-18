@@ -66,7 +66,7 @@ class ArticlesPipeline(object):
             translated_chunk = translate_with_gpt(chunk, translated_title)
             translated_chunks.append(translated_chunk)
 
-        translated_text = " ".join(translated_chunks)
+        translated_text = " ".join(filter(None, translated_chunks))
         translated_text = self.wrap_paragraphs_in_tags(translated_text)
 
         return translated_text
