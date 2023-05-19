@@ -3,8 +3,9 @@ $(document).ready(function () {
         selector: "#translation-editor",
         height: '100vh',
         plugins: 'anchor autolink code charmap codesample image link lists media searchreplace table wordcount',
-        toolbar: 'undo redo | fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat | code',
+        toolbar: 'undo redo | fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | charmap | removeformat | code | wordcount',
         content_style: 'img { max-width: 100% !important; } .mce-content-body { padding-bottom: 6rem !important; }',
+        statusbar: false,
         init_instance_callback: function (editor) {
             syncTinyMCEScroll(editor);
         },
@@ -130,7 +131,25 @@ $(document).ready(function () {
         const localDate = new Date(dateString);
         const offset = -9 * 60; // Tokyo is UTC+9
         const jstDate = new Date(localDate.getTime() + (offset + localDate.getTimezoneOffset()) * 60000);
-        return jstDate.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' });
+
+        // specify date and time formatting options
+        const dateOptions = { month: '2-digit', day: '2-digit' };
+        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+
+        // get date and time parts
+        let datePart = jstDate.toLocaleDateString('en-US', dateOptions);
+        let timePart = jstDate.toLocaleTimeString('en-US', timeOptions);
+
+        // remove leading zeros in date part
+        datePart = datePart.replace(/(^|\D)0+/g, "$1");
+
+        // remove leading zero in the hour part of time and convert to upper case
+        let [hourPart, minutePart] = timePart.split(":");
+        hourPart = hourPart.replace(/(^|\D)0+/g, "$1");
+        timePart = hourPart + ":" + minutePart;
+
+        // join date and time parts
+        return datePart + ', ' + timePart;
     }
 
     function getSourceIcon(source) {

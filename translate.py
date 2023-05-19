@@ -6,9 +6,8 @@ import time
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-# openai.configuration.timeout = 900
 
-def request_translation(func, text, title=None, num_retries=3, retry_delay=5):
+def request_translation(func, text, title=None, num_retries=3, retry_delay=150):
     for i in range(num_retries):
         try:
             if func.__name__ == "translate_text":
@@ -67,7 +66,7 @@ def translate_text(text, translated_title):
             max_tokens=5000,
             temperature=0.8,
             top_p=0.7,
-            request_timeout=900,
+            # request_timeout=900,
             n=1,
         )
 
