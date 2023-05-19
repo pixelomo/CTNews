@@ -60,7 +60,6 @@ class CoindeskSpider(scrapy.Spider):
 
         scraped_html = self.driver.find_element(By.CSS_SELECTOR,"article div:nth-of-type(2)").get_attribute("outerHTML")
         scraped_text = "".join([elem.text for elem in self.driver.find_elements(By.CSS_SELECTOR,"article div:nth-of-type(2) *")])
-
         # Remove the h1 tag from the scraped_html and scraped_text
         scraped_html = re.sub(r'<h1[^>]*>.*?</h1>', '', scraped_html)
         # Remove the h1 / first line from the scraped_text

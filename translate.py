@@ -8,8 +8,24 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 # openai.configuration.timeout = 900
 
-def translate_with_gpt(text, translated_title):
-    retries = 0
+def request_translation(func, text, title=None, num_retries=3, retry_delay=5):
+    for i in range(num_retries):
+        try:
+            if func.__name__ == "translate_text":
+                response = func(text, title)
+            else:
+                response = func(text)
+            if response is not None:
+                return response
+        except Exception as e:
+            if i < num_retries - 1:
+                time.sleep(retry_delay)
+                continue
+            else:
+                raise e
+    return None
+
+def translate_text(text, translated_title):
     print('translating...')
     briefing = (
         "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
@@ -62,19 +78,9 @@ def translate_with_gpt(text, translated_title):
 
     except openai.OpenAIError as e:
         print(f"Error during API request: {e}")
-
-        # if retries < max_retries - 1:
-        #     print(f"Waiting for {wait_time} seconds before retrying...")
-        #     time.sleep(wait_time)
-        #     retries += 1
-        #     print(f"Retry {retries}/{max_retries}")
-
-        # else:
-        #     print(f"Failed after {max_retries} retries. Exiting.")
-        #     raise
         return None
 
-def translate_title_with_gpt(text, target_language="Japanese"):
+def translate_title(text, target_language="Japanese"):
     briefing = (
         "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
         "今から仮想通貨に関する英文のニュース記事を、読みやすい日本語記事に翻訳編集してください。\n\n"
@@ -131,5 +137,5 @@ def translate_title_with_gpt(text, target_language="Japanese"):
 
 if __name__ == "__main__":
     text = "Bitcoin ordinals — also known as Bitcoin NFTs — have made their way into the limelight of the Web3 space, as more marketplaces continue to adopt and offer digital assets. On May 9, the cryptocurrency exchange Binance announced that it will support Bitcoin ordinals on its NFT marketplace in late May. The development will expand Binance’s multichain NFT ecosystem to include the Bitcoin network. Previously the Binance NFT market integrated with other decentralized networks, including BNB Chain, Ethereum and Polygon. Mayur Kamat, the head of product at Binance, commented on broadening the offerings in the marketplace and Bitcoin’s (BTC) crypto legacy: “Bitcoin is the OG of crypto.”The update allows Binance users to purchase and trade Bitcoin ordinals from existing Binance accounts. According to the announcement, the update will also include royalty support and “additional revenue generating opportunities” for those creating Bitcoin ordinals.Related: Bitcoin metrics to the moon: ATH for hash rate, daily transactions and OrdinalsPrior to Binance’s announcement, the cryptocurrency exchange OKX similarly announced in late April that it was bringing Bitcoin ordinals to its marketplace and wallet ecosystem. Initially, OKX users could view and store ordinals using their accounts, with the option to mint ordinals being hinted at in the future, according to Haider Rafique, the chief marketing officer at OKX.The Bitcoin NFTs are also available on marketplaces such as Magic Eden, which integrated the feature back in March. Ordinals reach 3 million inscriptions. Source: DuneAccording to recent data, inscriptions of Bitcoin ordinals have been on the rise in recent months. On April 2, Bitcoin ordinals reached 58,179 inscriptions — up 83.5% from the previous month. However, on May 1, the total number of Bitcoin ordinal inscriptions skyrocketed to exceed 3 million. Nonetheless, they remain a controversial topic within the crypto community, with Bitcoin maximalists criticizing them for deviating from Bitcoin’s original peer-to-peer ethos.Magazine: ZK-rollups are ‘the endgame’ for scaling blockchains: Polygon Miden founder"
-    translated_text = translate_with_gpt(text, "BTCが不安定な週末に3％下落したため、次にこれらのビットコインの価格水準に注目する。")
+    translated_text = translate_text(text, "BTCが不安定な週末に3％下落したため、次にこれらのビットコインの価格水準に注目する。")
     print(f"Final translated text: {translated_text}")

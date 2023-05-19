@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup, NavigableString
-from translate import translate_with_gpt, translate_title_with_gpt
+from translate import translate_text, translate_title, request_translation
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
 from itertools import islice
@@ -42,7 +42,6 @@ class ArticlesPipeline(object):
         return '\n'.join(wrapped_paragraphs)
 
     def translate_text(self, text, translated_title):
-        # text = self.process_original_text(text)
         # Function to split the text into chunks
         def split_text_by_chunks(text, chunk_size):
             words = text.split()
@@ -63,7 +62,7 @@ class ArticlesPipeline(object):
                 # last_sentence = translated_chunks[-1].rsplit("。", 1)[-2] + "。"
                 # context = f"Based on this summary, continue writing this article cohesively: {last_sentence}"
                 # chunk = context + chunk
-            translated_chunk = translate_with_gpt(chunk, translated_title)
+            translated_chunk = request_translation(translate_text, chunk, translated_title)
             translated_chunks.append(translated_chunk)
 
         translated_text = " ".join(filter(None, translated_chunks))
@@ -106,7 +105,7 @@ class ArticlesPipeline(object):
         print("START: \n" +original_full_text+ "\n :END")
 
         try:
-            translated_full_text = translate_with_gpt(original_full_text, translated_title)
+            translated_full_text = request_translation(translate_text, original_full_text, translated_title)
             if translated_full_text is not None and translated_full_text.strip():
                 translated_full_text = translated_full_text.replace("翻訳・編集　コインテレグラフジャパン", "")
                 translated_paragraphs = translated_full_text.split("\n")
@@ -142,7 +141,7 @@ class ArticlesPipeline(object):
             # Check if the title field is not None
             if item.get("title"):
                 # Translate title
-                title_translated = translate_title_with_gpt(item["title"])
+                title_translated = request_translation(translate_title, item["title"])
 
                 if title_translated is not None:
                     item["title_translated"] = title_translated
