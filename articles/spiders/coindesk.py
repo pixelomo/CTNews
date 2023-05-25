@@ -37,6 +37,7 @@ class CoindeskSpider(scrapy.Spider):
             "source": "CoinDesk"
         }
 
+
     def article_exists(self, title, link):
         with app.app_context():
             from app import Article as ArticleModel
