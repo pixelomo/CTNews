@@ -9,6 +9,7 @@ class CoindeskSpider(scrapy.Spider):
         'https://www.coindesk.com/arc/outboundfeeds/rss/',
     ]
 
+
     def parse(self, response):
         items = response.xpath("//item")
         for item in items:
