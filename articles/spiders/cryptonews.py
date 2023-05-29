@@ -22,7 +22,7 @@ class CryptoNewsSpider(scrapy.Spider):
             content_request.meta['title'] = title
             content_request.meta['pubDate'] = pubDate
             content_request.meta['link'] = link
-            content_request.meta['source'] = "CryptoNews.com"
+            content_request.meta['source'] = "CryptoNews"
             yield content_request
 
     def parse_article(self, response):
@@ -45,7 +45,7 @@ class CryptoNewsSpider(scrapy.Spider):
             "link": scraped_link,
             "text": scraped_text,
             "html": scraped_html,
-            "source": "CryptoNews.com"
+            "source": "CryptoNews"
         }
 
     def article_exists(self, title, link):
