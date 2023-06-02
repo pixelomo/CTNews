@@ -156,6 +156,7 @@ $(document).ready(function () {
         const sourceMap = {
             "Cointelegraph": { text: "CT", color: "#fabf2c" },
             "Blockworks": { text: "BW", color: "#ff5249", font: "#fff" },
+            "Ambcrypto": { text: "AM", color: "#a0ffff" },
             "TheBlock": { text: "TB", color: "#9C27B0", font: "#fff" },
             "Wublock": { text: "WU", color: "#1d9bf0" },
             "CoinDesk": { text: "CD", color: "#00d4a1" },
