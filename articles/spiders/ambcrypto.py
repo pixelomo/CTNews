@@ -34,9 +34,9 @@ class AmbcryptoSpider(scrapy.Spider):
         scraped_link = response.url
         scraped_pubDate = response.meta["pubDate"]
         # Filter out script tags from the HTML
-        scraped_html = ''.join(response.css(".single-post-main-middle").xpath('//*[not(self::script)]').getall())
+        scraped_html = ''.join(response.css(".single-post-main-middle").xpath('.//*[not(self::script)]').getall())
         # Filter out script tags from the text
-        scraped_text = ''.join(response.css(".single-post-main-middle *:not(script)::text").getall())
+        scraped_text = ''.join(response.css(".single-post-main-middle").xpath('.//*:not(script)::text').getall())
         scraped_text = re.sub(r'\n\s*\n', '\n\n', scraped_text)
         # print(scraped_text)
         yield {
