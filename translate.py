@@ -71,8 +71,7 @@ def translate_text(text, translated_title):
         )
 
         translated_text = response.choices[0].message.content.strip()
-        # print("chunk: "+translated_text)
-
+        # print("chunk: "+translated_text)ß
         return translated_text
 
     except openai.OpenAIError as e:
