@@ -1,9 +1,8 @@
 import logging
 from logging.config import fileConfig
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from app import app, db
+
+from flask import current_app
+
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -19,10 +18,10 @@ logger = logging.getLogger('alembic.env')
 def get_engine():
     try:
         # this works with Flask-SQLAlchemy<3 and Alchemical
-        return app.extensions['migrate'].db.get_engine()
+        return current_app.extensions['migrate'].db.get_engine()
     except TypeError:
         # this works with Flask-SQLAlchemy>=3
-        return app.extensions['migrate'].db.engine
+        return current_app.extensions['migrate'].db.engine
 
 
 def get_engine_url():
@@ -38,7 +37,7 @@ def get_engine_url():
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 config.set_main_option('sqlalchemy.url', get_engine_url())
-target_db = app.extensions['migrate'].db
+target_db = current_app.extensions['migrate'].db
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -98,7 +97,7 @@ def run_migrations_online():
             connection=connection,
             target_metadata=get_metadata(),
             process_revision_directives=process_revision_directives,
-            **app.extensions['migrate'].configure_args
+            **current_app.extensions['migrate'].configure_args
         )
 
         with context.begin_transaction():
