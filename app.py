@@ -59,6 +59,7 @@ class Article(db.Model):
     pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     link = db.Column(db.String, nullable=False, unique=True)
     text = db.Column(db.Text, nullable=True)
+    text_chinese = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
     title_translated = db.Column(db.String, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
