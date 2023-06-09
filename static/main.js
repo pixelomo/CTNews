@@ -204,6 +204,28 @@ $(document).ready(function () {
         if (clickedArticle) {
             clickedArticle.classList.add("selected-article");
         }
+
+        const article = $(clickedArticle).data("article");
+
+        $("#original-title").html(article.title);
+        $("#original-html").html(article.html);
+
+        loadTranslation(article);
+    }
+
+    function loadTranslation(article) {
+        // Get the active tab
+        var activeLanguage = $('.tabs-container-translation .active').data('target');
+
+        // Convert the active language to lower case for use in the field names
+        var lowerCaseLanguage = activeLanguage.toLowerCase();
+
+        // Set the content based on the active language
+        if (activeLanguage === "Japanese") {
+          tinymce.get("translation-editor").setContent(`<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
+        } else {
+          tinymce.get("translation-editor").setContent(`<h3>${article['title_' + lowerCaseLanguage]}</h3>${article['text_' + lowerCaseLanguage] || ''}`);
+        }
     }
 
     function syncTinyMCEScroll(editor) {
@@ -236,14 +258,14 @@ $(document).ready(function () {
         });
     }
 
-    const tabButtons = document.querySelectorAll('.tab-button');
+    const mobileTabButtons = document.querySelectorAll('.mobile-tabs .tab-button');
     const tabs = document.querySelectorAll('.tab');
 
-    tabButtons.forEach(button => {
+    mobileTabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const target = button.getAttribute('data-target');
             // Update button active state
-            tabButtons.forEach(btn => {
+            mobileTabButtons.forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-target') === target);
             });
             // Show/hide tabs
@@ -252,6 +274,19 @@ $(document).ready(function () {
             });
         });
     });
+
+    $('.tabs-container-translation .tab-button').on('click', function() {
+        $('.tabs-container-translation .tab-button').removeClass('active');
+        $(this).addClass('active');
+
+        // Load the translated content based on the new active tab
+        const selectedArticle = document.querySelector(".selected-article");
+        if (selectedArticle) {
+          const article = $(selectedArticle).data("article");
+          loadTranslation(article);
+        }
+    });
+
 
 
 });

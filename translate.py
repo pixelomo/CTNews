@@ -2,18 +2,19 @@
 import openai
 import os
 from dotenv import load_dotenv
+from briefings import briefings
 import time
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def request_translation(func, text, title=None, num_retries=3, retry_delay=150):
+def request_translation(func, text, translated_title=None, target_language="Japanese", num_retries=3, retry_delay=150):
     for i in range(num_retries):
         try:
             if func.__name__ == "translate_text":
-                response = func(text, title)
+                response = func(text, translated_title, target_language)
             else:
-                response = func(text)
+                response = func(text, target_language)
             if response is not None:
                 return response
         except Exception as e:
@@ -24,38 +25,10 @@ def request_translation(func, text, title=None, num_retries=3, retry_delay=150):
                 raise e
     return None
 
-def translate_text(text, translated_title):
+def translate_text(text, translated_title, target_language="Japanese"):
     print('translating...')
-    briefing = (
-        "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
-        "今から仮想通貨に関する英文のニュース記事を、読みやすい日本語記事に翻訳編集してください。\n\n"
-        "・全体的に、日本経済新聞ぽい文体にしてください。\n"
-        "・ですます調ではなく、である調で翻訳すること\n"
-        "・英文の固有名詞や人名はカタカナ表記に直すこと\n"
-        "・人名がでてきたときは初回は氏をつける。二回目以降は苗字だけにして氏をつける。\n"
-        "・ドル単位で表記されているUS$30,000のような数字は、以下のような形式に変換すること\n\n"
-        "3万ドル(約X円)\n"
-        "X＝現在のドル円為替レートで変換し表記\n\n"
-        "・CRYPTOを暗号資産でなく仮想通貨と翻訳すること\n"
-        "・ツイッターからの引用も、かぎかっこの中にいれてしっかり訳してください\n"
-        "・かぎかっこの前には句読点や、はいれない。\n"
-        "・直訳ではなく、新聞記事としての文体にすること\n"
-        "・一文の長さはなるべく90文字以内におさめる。\n"
-        "・述という漢字は「のべる」という言葉においては使わないこと\n"
-        "・述べている、ではなく、だとという。、としてもよい。\n"
-        "・本日ではなく、今日と訳する。\n"
-        "・である、でなく、だ、を優先して使ってください。\n"
-        "・であるという語尾をなるべく使わないようにしてください\n"
-        "・のべた、を一度つかったら、そのあとは、とした、と語った、など違った表現の語尾にしてください。\n"
-        "・80,321等の数字は8万321と変換する\n"
-        "・80,321等の数字は80321とし、,を入れない\n"
-        "・ETHはETHとそのまま表記してください\n"
-        "・翻訳文は、少なくとも原文と同じ長さにする必要があります。\n"
-        "・最後に「翻訳・編集　コインテレグラフジャパン」と記載してください。\n"
-        "・翻訳文は原文の語数と同じ長さにしてください。\n"
-        "そして以下の記事を上記の条件を守りながら和訳してください。\n"
-    )
-
+    briefing = [b for b in briefings if b['language'] == target_language][0]
+    briefing = briefing['main'] + briefing['article']
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -79,33 +52,8 @@ def translate_text(text, translated_title):
         return None
 
 def translate_title(text, target_language="Japanese"):
-    briefing = (
-        "あなたはプロの新聞記者兼編集者であり、世界的なニュースメディア「コインテレグラフ」の日本語版である「コインテレグラフジャパン」で日本人向けに記事をかいています。"
-        "今から仮想通貨に関する英文のニュース記事を、読みやすい日本語記事に翻訳編集してください。\n\n"
-        "・全体的に、日本経済新聞ぽい文体にしてください。\n"
-        "・ですます調ではなく、である調で翻訳すること\n"
-        "・英文の固有名詞や人名はカタカナ表記に直すこと\n"
-        "・人名がでてきたときは初回は氏をつける。二回目以降は苗字だけにして氏をつける。\n"
-        "・ドル単位で表記されているUS$30,000のような数字は、以下のような形式に変換すること\n\n"
-        "3万ドル(約X円)\n"
-        "X＝現在のドル円為替レートで変換し表記\n\n"
-        "・CRYPTOを暗号資産でなく仮想通貨と翻訳すること\n"
-        "・ツイッターからの引用も、かぎかっこの中にいれてしっかり訳してください\n"
-        "・かぎかっこの前には句読点や、はいれない。\n"
-        "・直訳ではなく、新聞記事としての文体にすること\n"
-        "・一文の長さはなるべく90文字以内におさめる。\n"
-        "・述という漢字は「のべる」という言葉においては使わないこと\n"
-        "・述べている、ではなく、だとという。、としてもよい。\n"
-        "・本日ではなく、今日と訳する。\n"
-        "・である、でなく、だ、を優先して使ってください。\n"
-        "・であるという語尾をなるべく使わないようにしてください\n"
-        "・のべた、を一度つかったら、そのあとは、とした、と語った、など違った表現の語尾にしてください。\n"
-        "・80,321等の数字は8万321と変換する\n"
-        "・80,321等の数字は80321とし、,を入れない\n"
-        "・ETHはETHとそのまま表記してください\n"
-        "そこで、上記の条件を守りながら、以下のタイトルを日本語に翻訳してください。\n"
-    )
-
+    briefing = [b for b in briefings if b['language'] == target_language][0]
+    briefing = briefing['main'] + briefing['headline']
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",

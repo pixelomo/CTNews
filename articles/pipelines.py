@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup, NavigableString
 from translate import translate_text, translate_title, request_translation
+from briefings import briefings
 from app import app, db, Article
 from sqlalchemy.exc import IntegrityError
 from itertools import islice
@@ -136,47 +137,60 @@ class ArticlesPipeline(object):
 
     def process_item(self, item, spider):
         print("process_item called")
-        # print(item)
+
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):
-                # Translate title
-                title_translated = request_translation(translate_title, item["title"])
+                # Loop over each language in briefings
+                for language in briefings:
+                    target_language = language['language']
 
-                if title_translated is not None:
-                    item["title_translated"] = title_translated
+                    # Translate title
+                    title_translated = request_translation(translate_title, item["title"], target_language=target_language)
 
-                    # Check if the text field is not None
-                    if item.get("text"):
-                        # Translate text
-                        # content_translated = self.translate_html(item["html"], title_translated)
-                        content_translated = self.translate_text(item["text"], title_translated)
-                        if content_translated is not None:
-                            item["content_translated"] = content_translated
-                            print(f"Content Translated: {item['content_translated']}")
+                    if title_translated is not None:
+                        # Save Japanese translated title directly to 'title_translated' field
+                        if target_language == "Japanese":
+                            item["title_translated"] = title_translated
                         else:
-                            print("Dropping item: Missing content_translated")  # Add this line
-                            # raise DropItem("Missing content_translated")
-                else:
-                    print("Dropping item: Title is None")
-                    # raise DropItem("Title is None")
+                            item[f"title_{target_language}"] = title_translated
+
+                        # Check if the text field is not None
+                        if item.get("text"):
+                            # Translate text
+                            content_translated = self.translate_text(item["text"], title_translated, target_language)
+                            if content_translated is not None:
+                                # Save Japanese translated text directly to 'content_translated' field
+                                if target_language == "Japanese":
+                                    item["content_translated"] = content_translated
+                                else:
+                                    item[f"text_{target_language}"] = content_translated
+                                print(f"Content Translated: {item[f'text_{target_language}' if target_language != 'Japanese' else 'content_translated']}")
+                            else:
+                                print(f"Dropping item: Missing content_translated for {target_language}")
+                    else:
+                        print(f"Dropping item: Title is None for {target_language}")
             else:
                 print("Dropping item: Missing title")
-                # raise DropItem("Missing title")
 
             # Save article to database
             if os.environ.get('APP_ENV') != 'test':
                 try:
                     article = Article(
                         title=item["title"],
-                        title_translated=item["title_translated"],
                         pubDate=item["pubDate"],
                         link=item["link"],
-                        text=item["text"] if item.get("text") else None,
                         html=item["html"],
-                        content_translated=item.setdefault("content_translated", None),
                         source=item["source"],
                     )
+                    for language in briefings:
+                        target_language = language['language']
+                        if target_language == "Japanese":
+                            article.title_translated = item.get("title_translated")
+                            article.content_translated = item.get("content_translated")
+                        else:
+                            setattr(article, f"title_{target_language}", item.get(f"title_{target_language}"))
+                            setattr(article, f"text_{target_language}", item.get(f"text_{target_language}"))
                     db.session.add(article)
                     db.session.commit()
                 except IntegrityError as e:
