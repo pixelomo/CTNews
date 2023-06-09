@@ -94,9 +94,9 @@ class SaveArticleResource(Resource):
             html=data["html"],
             source=data["source"],
             title_translated=data["title_translated"],
-            content_translated=data["content_translated"]
-            title_chinese=data.get("title_chinese"),
-            text_chinese=data.get("text_chinese")
+            content_translated=data["content_translated"],
+            title_chinese=data["title_chinese"],
+            text_chinese=data["text_chinese"]
         )
         print(f"Article to be saved: {article.__dict__}")
 
