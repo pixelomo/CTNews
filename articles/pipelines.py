@@ -42,7 +42,7 @@ class ArticlesPipeline(object):
         wrapped_paragraphs = ['<p>{}</p>'.format(p) for p in paragraphs]
         return '\n'.join(wrapped_paragraphs)
 
-    def translate_text(self, text, translated_title):
+    def translate_article(self, text, translated_title, target_language):
         # Function to split the text into chunks
         def split_text_by_chunks(text, chunk_size):
             words = text.split()
@@ -63,7 +63,7 @@ class ArticlesPipeline(object):
                 # last_sentence = translated_chunks[-1].rsplit("。", 1)[-2] + "。"
                 # context = f"Based on this summary, continue writing this article cohesively: {last_sentence}"
                 # chunk = context + chunk
-            translated_chunk = request_translation(translate_text, chunk, translated_title)
+            translated_chunk = request_translation(translate_text, chunk, translated_title, target_language)
             translated_chunks.append(translated_chunk)
 
         translated_text = " ".join(filter(None, translated_chunks))
@@ -158,7 +158,7 @@ class ArticlesPipeline(object):
                         # Check if the text field is not None
                         if item.get("text"):
                             # Translate text
-                            content_translated = self.translate_text(item["text"], title_translated, target_language)
+                            content_translated = self.translate_article(item["text"], title_translated, target_language)
                             if content_translated is not None:
                                 # Save Japanese translated text directly to 'content_translated' field
                                 if target_language == "Japanese":

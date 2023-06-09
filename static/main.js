@@ -205,12 +205,16 @@ $(document).ready(function () {
             clickedArticle.classList.add("selected-article");
         }
 
-        const article = $(clickedArticle).data("article");
+        // Reset active tab to "JP"
+        $('.tabs-container-translation .tab-button').removeClass('active');
+        $('.tabs-container-translation .tab-button[data-target="jp"]').addClass('active');
 
-        $("#original-title").html(article.title);
-        $("#original-html").html(article.html);
-
-        loadTranslation(article);
+        // Load the translated content for "JP" tab
+        const selectedArticle = document.querySelector(".selected-article");
+        if (selectedArticle) {
+          const article = $(selectedArticle).data("article");
+          loadTranslation(article);
+        }
     }
 
     function loadTranslation(article) {
