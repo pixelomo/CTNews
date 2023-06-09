@@ -213,13 +213,13 @@ $(document).ready(function () {
         const selectedArticle = document.querySelector(".selected-article");
         if (selectedArticle) {
           const article = $(selectedArticle).data("article");
-          loadTranslation(article);
+          loadTranslation(article, "Japanese");
         }
     }
 
-    function loadTranslation(article) {
+    function loadTranslation(article, targetLanguage) {
         // Get the active tab
-        var activeLanguage = $('.tabs-container-translation .active').data('target');
+        var activeLanguage = targetLanguage || $('.tabs-container-translation .active').data('target');
         // Convert the active language to lower case for use in the field names
         var lowerCaseLanguage = activeLanguage.toLowerCase();
         // Set the content based on the active language
