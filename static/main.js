@@ -216,10 +216,8 @@ $(document).ready(function () {
     function loadTranslation(article) {
         // Get the active tab
         var activeLanguage = $('.tabs-container-translation .active').data('target');
-
         // Convert the active language to lower case for use in the field names
         var lowerCaseLanguage = activeLanguage.toLowerCase();
-
         // Set the content based on the active language
         if (activeLanguage === "Japanese") {
           tinymce.get("translation-editor").setContent(`<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
