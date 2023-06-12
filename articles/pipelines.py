@@ -150,7 +150,7 @@ class ArticlesPipeline(object):
 
                     if title_translated is not None:
                         # Save Japanese translated title directly to 'title_translated' field
-                        if target_language == "Japanese":
+                        if target_language == "japanese":
                             item["title_translated"] = title_translated
                         else:
                             item[f"title_{target_language}"] = title_translated
@@ -161,11 +161,11 @@ class ArticlesPipeline(object):
                             content_translated = self.translate_article(item["text"], title_translated, target_language)
                             if content_translated is not None:
                                 # Save Japanese translated text directly to 'content_translated' field
-                                if target_language == "Japanese":
+                                if target_language == "japanese":
                                     item["content_translated"] = content_translated
                                 else:
                                     item[f"text_{target_language}"] = content_translated
-                                print(f"Content Translated: {item[f'text_{target_language}' if target_language != 'Japanese' else 'content_translated']}")
+                                print(f"Content Translated: {item[f'text_{target_language}' if target_language != 'japanese' else 'content_translated']}")
                             else:
                                 print(f"Dropping item: Missing content_translated for {target_language}")
                     else:
@@ -185,7 +185,7 @@ class ArticlesPipeline(object):
                     )
                     for language in briefings:
                         target_language = language['language']
-                        if target_language == "Japanese":
+                        if target_language == "japanese":
                             article.title_translated = item.get("title_translated")
                             article.content_translated = item.get("content_translated")
                         else:

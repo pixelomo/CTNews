@@ -8,7 +8,7 @@ import time
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def request_translation(func, text, translated_title=None, target_language="Japanese", num_retries=3, retry_delay=150):
+def request_translation(func, text, translated_title=None, target_language="japanese", num_retries=3, retry_delay=150):
     for i in range(num_retries):
         try:
             if func.__name__ == "translate_text":
@@ -25,7 +25,7 @@ def request_translation(func, text, translated_title=None, target_language="Japa
                 raise e
     return None
 
-def translate_text(text, translated_title, target_language="Japanese"):
+def translate_text(text, translated_title, target_language="japanese"):
     print('translating...')
     briefing = [b for b in briefings if b['language'] == target_language][0]
     briefing = briefing['main'] + briefing['article']
@@ -51,7 +51,7 @@ def translate_text(text, translated_title, target_language="Japanese"):
         print(f"Error during API request: {e}")
         return None
 
-def translate_title(text, target_language="Japanese"):
+def translate_title(text, target_language="japanese"):
     briefing = [b for b in briefings if b['language'] == target_language][0]
     briefing = briefing['main'] + briefing['headline']
     try:
