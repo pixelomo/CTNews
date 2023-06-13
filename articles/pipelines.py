@@ -175,27 +175,50 @@ class ArticlesPipeline(object):
 
             # Save article to database
             if os.environ.get('APP_ENV') != 'test':
-                try:
-                    article = Article(
-                        title=item["title"],
-                        pubDate=item["pubDate"],
-                        link=item["link"],
-                        html=item["html"],
-                        source=item["source"],
-                    )
+                # Try to find an existing article with the same link
+                existing_article = Article.query.filter_by(link=item["link"]).first()
+
+                if existing_article:
+                    # If article exists, update its fields
                     for language in briefings:
                         target_language = language['language']
                         if target_language == "japanese":
-                            article.title_translated = item.get("title_translated")
-                            article.content_translated = item.get("content_translated")
+                            existing_article.title_translated = item.get("title_translated")
+                            existing_article.content_translated = item.get("content_translated")
                         else:
-                            setattr(article, f"title_{target_language}", item.get(f"title_{target_language}"))
-                            setattr(article, f"text_{target_language}", item.get(f"text_{target_language}"))
-                    db.session.add(article)
-                    db.session.commit()
-                except IntegrityError as e:
-                    db.session.rollback()
+                            setattr(existing_article, f"title_{target_language}", item.get(f"title_{target_language}"))
+                            setattr(existing_article, f"text_{target_language}", item.get(f"text_{target_language}"))
+
+                    # Commit changes to the existing article
+                    try:
+                        db.session.commit()
+                    except IntegrityError as e:
+                        db.session.rollback()
+                else:
+                    # If article doesn't exist, create a new one
+                    try:
+                        article = Article(
+                            title=item["title"],
+                            pubDate=item["pubDate"],
+                            link=item["link"],
+                            html=item["html"],
+                            text=item["text"] if item.get("text") else None,
+                            source=item["source"],
+                        )
+                        for language in briefings:
+                            target_language = language['language']
+                            if target_language == "japanese":
+                                article.title_translated = item.get("title_translated")
+                                article.content_translated = item.get("content_translated")
+                            else:
+                                setattr(article, f"title_{target_language}", item.get(f"title_{target_language}"))
+                                setattr(article, f"text_{target_language}", item.get(f"text_{target_language}"))
+                        db.session.add(article)
+                        db.session.commit()
+                    except IntegrityError as e:
+                        db.session.rollback()
 
             return item
+
 
 

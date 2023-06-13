@@ -113,6 +113,7 @@ $(document).ready(function () {
                         listItem.appendTo(listGroup);
                     });
                 });
+                adjustAccordionHeight();
         });
     }
 
@@ -182,6 +183,12 @@ $(document).ready(function () {
             .text(iconData.text);
 
         return icon;
+    }
+
+    function adjustAccordionHeight() {
+        var totalHeaderHeight = $('.accordion-header').length * 28;
+        var maxContentHeight = 'calc(100vh - ' + totalHeaderHeight + 'px)';
+        $('.accordion-collapse').css('max-height', maxContentHeight);
     }
 
     const sidebarToggle = document.getElementById('sidebar-toggle');
