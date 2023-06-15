@@ -61,6 +61,8 @@ class Article(db.Model):
     text = db.Column(db.Text, nullable=True)
     title_chinese = db.Column(db.Text, nullable=True)
     text_chinese = db.Column(db.Text, nullable=True)
+    title_indonesian = db.Column(db.Text, nullable=True)
+    text_indonesian = db.Column(db.Text, nullable=True)
     html = db.Column(db.Text, nullable=True)
     title_translated = db.Column(db.String, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
@@ -78,7 +80,9 @@ class Article(db.Model):
             "title_translated": self.title_translated,
             "content_translated": self.content_translated,
             "title_chinese": self.title_chinese,
-            "text_chinese": self.text_chinese
+            "text_chinese": self.text_chinese,
+            "title_indonesian": self.title_indonesian,
+            "text_indonesian": self.text_indonesian,
         }
 
 class SaveArticleResource(Resource):
@@ -96,7 +100,9 @@ class SaveArticleResource(Resource):
             title_translated=data["title_translated"],
             content_translated=data["content_translated"],
             title_chinese=data["title_chinese"],
-            text_chinese=data["text_chinese"]
+            text_chinese=data["text_chinese"],
+            title_indonesian=data["title_indonesian"],
+            text_indonesian=data["text_indonesian"],
         )
         print(f"Article to be saved: {article.__dict__}")
 
