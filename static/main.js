@@ -162,6 +162,7 @@ $(document).ready(function () {
             "Wublock": { text: "WU", color: "#1d9bf0" },
             "CoinDesk": { text: "CD", color: "#00d4a1" },
             "CryptoNews": { text: "CN", color: "#9baaff" },
+            "ODaily": { text: "OD", color: "#222", font: "#fff" },
         };
 
         const iconData = sourceMap[source] || { text: "N/A", color: "gray" };
