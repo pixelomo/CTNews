@@ -26,8 +26,8 @@ class ODailySpider(scrapy.Spider):
             title = codecs.decode(title, 'unicode_escape').strip()
             text = codecs.decode(text, 'unicode_escape').strip()
 
-            print("Title: {}".format(title))
-            print("Description: {}".format(text))
+            # print("Title: {}".format(title))
+            # print("Description: {}".format(text))
 
             if self.article_exists(title, link):
                 continue
