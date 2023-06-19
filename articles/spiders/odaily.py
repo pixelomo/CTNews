@@ -25,17 +25,18 @@ class ODailySpider(scrapy.Spider):
             # print("Title: {}".format(title))
             # print("Description: {}".format(text))
 
-            if self.article_exists(title, link):
-                continue
+            # if self.article_exists(title, link):
+            #     continue
 
-            yield {
-                "title": title,
-                "pubDate": pubDate,
-                "link": link,
-                "text": text,
-                "html": None,
-                "source": "ODaily"
-            }
+            item = ArticleItem()
+            item["title"] = title
+            item["pubDate"] = pubDate
+            item["link"] = link
+            item["text"] = text
+            item["html"] = None
+            item["source"] = "ODaily"
+
+            yield item
 
     def convert_to_datetime(self, pubDate_text):
         return datetime.datetime.strptime(pubDate_text, '%Y-%m-%d %H:%M:%S')
