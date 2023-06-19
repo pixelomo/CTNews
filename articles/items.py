@@ -2,10 +2,16 @@
 import scrapy
 
 class Article(scrapy.Item):
-    # define the fields for your item here like:
     title = scrapy.Field()
-    link = scrapy.Field()
     pubDate = scrapy.Field()
-    html = scrapy.Field()
+    link = scrapy.Field()
     text = scrapy.Field()
+    title_chinese = scrapy.Field()
+    text_chinese = scrapy.Field()
+    title_indonesian = scrapy.Field()
+    text_indonesian = scrapy.Field()
+    html = scrapy.Field()
+    title_translated = scrapy.Field()
+    content_translated = scrapy.Field()
     source = scrapy.Field()
+
