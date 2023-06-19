@@ -12,12 +12,19 @@ $(document).ready(function () {
     });
 
     function loadArticles() {
+        // Start Loading UI
+        $("#loading").show().find("#loading-text").text("Loading...");
         // Use the appropriate route based on the environment
         var articlesRoute = location.hostname === "localhost" || location.hostname === "127.0.0.1"
             ? "/api/get_dummy_data"
             : "/api/get_all_articles";
 
         $.getJSON(articlesRoute, function (data) {
+            // Get total number of articles
+            const totalArticles = data.length;
+            // Update Loading UI
+            $("#loading-text").text("Loading " + totalArticles + " articles...");
+
             if (!Array.isArray(data)) {
                 data = [data];
             }
@@ -114,6 +121,9 @@ $(document).ready(function () {
                     });
                 });
                 adjustAccordionHeight();
+        }).always(function() {
+            // End Loading UI
+            $("#loading").hide();
         });
     }
 

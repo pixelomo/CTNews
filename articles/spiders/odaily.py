@@ -3,7 +3,6 @@ import json
 from articles.items import Article as ArticleItem
 from app import app, db
 import datetime
-import codecs
 
 class ODailySpider(scrapy.Spider):
     name = "odaily"
@@ -22,9 +21,6 @@ class ODailySpider(scrapy.Spider):
             pubDate = self.convert_to_datetime(pubDateText)
             html = None  # HTML content isn't available from the API
             text = article.get('description')
-             # Decode the unicode escaped strings
-            title = codecs.decode(title, 'unicode_escape').strip()
-            text = codecs.decode(text, 'unicode_escape').strip()
 
             # print("Title: {}".format(title))
             # print("Description: {}".format(text))
