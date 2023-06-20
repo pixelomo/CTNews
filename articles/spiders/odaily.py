@@ -19,7 +19,7 @@ class ODailySpider(scrapy.Spider):
             link = article.get('url')
             pubDateText = article.get('published_at')
             pubDate = self.convert_to_datetime(pubDateText)
-            html = None  # HTML content isn't available from the API
+            html = "<p></p>"
             text = article.get('description')
 
             # print("Title: {}".format(title))
@@ -33,7 +33,7 @@ class ODailySpider(scrapy.Spider):
             item["pubDate"] = pubDate
             item["link"] = link
             item["text"] = text
-            item["html"] = None
+            item["html"] = "<p></p>"
             item["source"] = "ODaily"
 
             yield item
