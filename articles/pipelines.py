@@ -136,17 +136,25 @@ class ArticlesPipeline(object):
         return str(soup)
 
     def process_item(self, item, spider):
-        print("process_item called")
+        source = item.get("source")
+        if source == "ODaily":
+            print("START ODaily: process_item called")
 
         with app.app_context():
             # Check if the title field is not None
             if item.get("title"):
+                if source == "ODaily":
+                    print("Processing article with title: ", item["title"])
                 # Loop over each language in briefings
                 for language in briefings:
                     target_language = language['language']
 
                     # Translate title
+                    if source == "ODaily":
+                        print("START: Requesting translation for title")
                     title_translated = request_translation(translate_title, item["title"], target_language=target_language)
+                    if source == "ODaily":
+                        print("END: Title translation request")
 
                     if title_translated is not None:
                         # Save Japanese translated title directly to 'title_translated' field
@@ -158,14 +166,18 @@ class ArticlesPipeline(object):
                         # Check if the text field is not None
                         if item.get("text"):
                             # Translate text
+                            print("START: Translating article content")
                             content_translated = self.translate_article(item["text"], title_translated, target_language)
+                            if source == "ODaily":
+                                print("END: Article content translated")
+                                print(content_translated)
                             if content_translated is not None:
                                 # Save Japanese translated text directly to 'content_translated' field
                                 if target_language == "japanese":
                                     item["content_translated"] = content_translated
                                 else:
                                     item[f"text_{target_language}"] = content_translated
-                                print(f"Content Translated: {item[f'text_{target_language}' if target_language != 'japanese' else 'content_translated']}")
+                                # print(f"Content Translated: {item[f'text_{target_language}' if target_language != 'japanese' else 'content_translated']}")
                             else:
                                 print(f"Dropping item: Missing content_translated for {target_language}")
                     else:
@@ -175,11 +187,13 @@ class ArticlesPipeline(object):
 
             # Save article to database
             if os.environ.get('APP_ENV') != 'test':
+                print("START: Saving article to database")
                 # Try to find an existing article with the same link
                 existing_article = Article.query.filter_by(link=item["link"]).first()
 
                 if existing_article:
                     # If article exists, update its fields
+                    print("Found existing article. Updating...")
                     for language in briefings:
                         target_language = language['language']
                         if target_language == "japanese":
@@ -192,11 +206,14 @@ class ArticlesPipeline(object):
                     # Commit changes to the existing article
                     try:
                         db.session.commit()
+                        print("END: Article updated in the database")
                     except IntegrityError as e:
                         db.session.rollback()
+                        print("ERROR: Failed to update article in the database")
                 else:
                     # If article doesn't exist, create a new one
                     try:
+                        print("Article doesn't exist. Creating a new one...")
                         article = Article(
                             title=item["title"],
                             pubDate=item["pubDate"],
@@ -215,8 +232,12 @@ class ArticlesPipeline(object):
                                 setattr(article, f"text_{target_language}", item.get(f"text_{target_language}"))
                         db.session.add(article)
                         db.session.commit()
+                        print("END: New article saved in the database")
+                        if source == "ODaily":
+                            print("END ODaily: saved to db")
                     except IntegrityError as e:
                         db.session.rollback()
+                        print("ERROR: Failed to save new article in the database")
 
             return item
 
