@@ -238,6 +238,7 @@ class ArticlesPipeline(object):
                     except IntegrityError as e:
                         db.session.rollback()
                         print("ERROR: Failed to save new article in the database")
+                        print(e)
 
             return item
 
