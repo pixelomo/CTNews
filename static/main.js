@@ -14,117 +14,126 @@ $(document).ready(function () {
     function loadArticles() {
         // Start Loading UI
         $("#loading").show().find("#loading-text").text("Loading...");
+
         // Use the appropriate route based on the environment
         var articlesRoute = location.hostname === "localhost" || location.hostname === "127.0.0.1"
             ? "/api/get_dummy_data"
             : "/api/get_all_articles";
 
-        $.getJSON(articlesRoute, function (data) {
-            // Get total number of articles
-            const totalArticles = data.length;
+        $.getJSON("/api/get_article_count").done(function(countData) {
+            const totalArticles = countData.count;
             // Update Loading UI
             $("#loading-text").text("Loading " + totalArticles + " articles...");
 
-            if (!Array.isArray(data)) {
-                data = [data];
-            }
-
-            // Sort articles by publication date (latest first)
-            data.sort(function (a, b) {
-                return new Date(b.pubDate) - new Date(a.pubDate);
+            // Fetch the actual articles after we have the count
+            $.getJSON(articlesRoute).done(function(articleData) {
+                // Update the UI with the articles
+                renderArticles(articleData);
+            }).always(function() {
+                // End Loading UI
+                $("#loading").hide();
             });
-
-            // Create an object to hold the articles by source
-            const articlesBySource = {};
-
-            data.forEach(function (article) {
-                if (!articlesBySource[article.source]) {
-                    articlesBySource[article.source] = [];
-                }
-                articlesBySource[article.source].push(article);
-            });
-
-            // Add a "Latest" accordion with articles from the past 12 hours
-            articlesBySource["Latest"] = filterLatestArticles(data);
-
-            // Clear the existing accordions
-            $("#source-accordion").empty();
-
-            // Iterate over each source and create the accordion items
-            Object.keys(articlesBySource)
-                .sort((a, b) => (a === "Latest" ? -1 : a.localeCompare(b)))
-                .forEach(function (source) {
-                    const sourceArticles = articlesBySource[source];
-                    // Create the accordion item for this source
-                    const accordionItem = $("<div>")
-                        .addClass("accordion-item")
-                        .appendTo("#source-accordion");
-
-                    // Create the accordion header
-                    const accordionHeader = $("<h2>")
-                        .addClass("accordion-header")
-                        .attr("id", `${source}-heading`)
-                        .appendTo(accordionItem);
-
-                    // Create the accordion button
-                    $("<button>")
-                        .addClass("accordion-button collapsed")
-                        .attr("type", "button")
-                        .attr("data-bs-toggle", "collapse")
-                        .attr("data-bs-target", `#${source}-collapse`)
-                        .attr("aria-expanded", "false")
-                        .attr("aria-controls", `${source}-collapse`)
-                        .text(source)
-                        .appendTo(accordionHeader);
-
-                    // Create the accordion collapse
-                    const accordionCollapse = $("<div>")
-                        .attr("id", `${source}-collapse`)
-                        .addClass("accordion-collapse collapse")
-                        .attr("aria-labelledby", `${source}-heading`)
-                        .attr("data-bs-parent", "#source-accordion")
-                        .appendTo(accordionItem);
-
-                    // Create the list group for this source's articles
-                    const listGroup = $("<ul>")
-                        .addClass("list-group")
-                        .appendTo(accordionCollapse);
-
-                    // Add the articles to the list group
-                    sourceArticles.forEach(function (article) {
-                        const listItem = $("<li>")
-                            .addClass("list-group-item")
-                            .data("article", article)
-                            .on("click", function (event) {
-                                onArticleClick(event);
-
-                                $("#original-title").html(article.title);
-                                $("#original-html").html(article.html);
-                                tinymce.get("translation-editor").setContent(`<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
-                            });
-
-                        // Add the title
-                        $("<span>")
-                            .text(article.title)
-                            .appendTo(listItem);
-
-                        // Add the source icon
-                        getSourceIcon(article.source).appendTo(listItem);
-
-                        // Add the formatted date
-                        $("<small>")
-                            .addClass("text-muted")
-                            .text(formatDateToJST(article.pubDate))
-                            .appendTo(listItem);
-
-                        listItem.appendTo(listGroup);
-                    });
-                });
-                adjustAccordionHeight();
-        }).always(function() {
-            // End Loading UI
-            $("#loading").hide();
         });
+    }
+
+    function renderArticles(data) {
+
+        if (!Array.isArray(data)) {
+            data = [data];
+        }
+
+        // Sort articles by publication date (latest first)
+        data.sort(function (a, b) {
+            return new Date(b.pubDate) - new Date(a.pubDate);
+        });
+
+        // Create an object to hold the articles by source
+        const articlesBySource = {};
+
+        data.forEach(function (article) {
+            if (!articlesBySource[article.source]) {
+                articlesBySource[article.source] = [];
+            }
+            articlesBySource[article.source].push(article);
+        });
+
+        // Add a "Latest" accordion with articles from the past 12 hours
+        articlesBySource["Latest"] = filterLatestArticles(data);
+
+        // Clear the existing accordions
+        $("#source-accordion").empty();
+
+        // Iterate over each source and create the accordion items
+        Object.keys(articlesBySource)
+            .sort((a, b) => (a === "Latest" ? -1 : a.localeCompare(b)))
+            .forEach(function (source) {
+                const sourceArticles = articlesBySource[source];
+                // Create the accordion item for this source
+                const accordionItem = $("<div>")
+                    .addClass("accordion-item")
+                    .appendTo("#source-accordion");
+
+                // Create the accordion header
+                const accordionHeader = $("<h2>")
+                    .addClass("accordion-header")
+                    .attr("id", `${source}-heading`)
+                    .appendTo(accordionItem);
+
+                // Create the accordion button
+                $("<button>")
+                    .addClass("accordion-button collapsed")
+                    .attr("type", "button")
+                    .attr("data-bs-toggle", "collapse")
+                    .attr("data-bs-target", `#${source}-collapse`)
+                    .attr("aria-expanded", "false")
+                    .attr("aria-controls", `${source}-collapse`)
+                    .text(source)
+                    .appendTo(accordionHeader);
+
+                // Create the accordion collapse
+                const accordionCollapse = $("<div>")
+                    .attr("id", `${source}-collapse`)
+                    .addClass("accordion-collapse collapse")
+                    .attr("aria-labelledby", `${source}-heading`)
+                    .attr("data-bs-parent", "#source-accordion")
+                    .appendTo(accordionItem);
+
+                // Create the list group for this source's articles
+                const listGroup = $("<ul>")
+                    .addClass("list-group")
+                    .appendTo(accordionCollapse);
+
+                // Add the articles to the list group
+                sourceArticles.forEach(function (article) {
+                    const listItem = $("<li>")
+                        .addClass("list-group-item")
+                        .data("article", article)
+                        .on("click", function (event) {
+                            onArticleClick(event);
+
+                            $("#original-title").html(article.title);
+                            $("#original-html").html(article.html);
+                            tinymce.get("translation-editor").setContent(`<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
+                        });
+
+                    // Add the title
+                    $("<span>")
+                        .text(article.title)
+                        .appendTo(listItem);
+
+                    // Add the source icon
+                    getSourceIcon(article.source).appendTo(listItem);
+
+                    // Add the formatted date
+                    $("<small>")
+                        .addClass("text-muted")
+                        .text(formatDateToJST(article.pubDate))
+                        .appendTo(listItem);
+
+                    listItem.appendTo(listGroup);
+                });
+            });
+        adjustAccordionHeight();
     }
 
     loadArticles();
@@ -306,7 +315,4 @@ $(document).ready(function () {
           loadTranslation(article);
         }
     });
-
-
-
 });

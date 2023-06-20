@@ -119,8 +119,14 @@ class GetAllArticlesResource(Resource):
         articles = Article.query.all()
         return jsonify([article.to_dict() for article in articles])
 
+class ArticleCountResource(Resource):
+    def get(self):
+        count = Article.query.count()
+        return jsonify({"count": count})
+
 api.add_resource(SaveArticleResource, "/api/save_article")
 api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
+api.add_resource(ArticleCountResource, "/api/get_article_count")
 
 if __name__ == '__main__':
     if os.environ.get('FLASK_ENV') == 'development':

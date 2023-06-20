@@ -16,10 +16,10 @@ class ODailySpider(scrapy.Spider):
         articles = data.get('data', {}).get('items', [])
         for article in articles:
             title = article.get('title')
-            link = article.get('url')
+            link = article.get('news_url')
             pubDateText = article.get('published_at')
             pubDate = self.convert_to_datetime(pubDateText)
-            html = "<p></p>"
+            html = ""
             text = article.get('description')
 
             # print("Title: {}".format(title))
@@ -33,7 +33,7 @@ class ODailySpider(scrapy.Spider):
             item["pubDate"] = pubDate
             item["link"] = link
             item["text"] = text
-            item["html"] = "<p></p>"
+            item["html"] = ""
             item["source"] = "ODaily"
 
             yield item
