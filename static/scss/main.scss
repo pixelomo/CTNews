@@ -1,5 +1,9 @@
-#loading {
-    display: none;
+body {
+    margin: 0;
+    font-family: Futura, sans-serif;
+  }
+
+  #loading {
     position: fixed;
     z-index: 1000;
     top: 0;
@@ -9,53 +13,53 @@
     background: rgba(255, 255, 255, 0.8);
 
     #loading-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 20px;
-        font-weight: bold;
-        color: #222;
-        z-index: 999;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-weight: bold;
+      color: #222;
+      z-index: 999;
     }
 
     .loading-circle {
-        border-radius: 50%;
-        position: absolute;
-        width: 180px;
-        height: 180px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0.1;
-        filter: hue-rotate(600deg);
+      border-radius: 50%;
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.1;
+      filter: hue-rotate(600deg);
     }
 
     @keyframes spiral {
-        0% {
-            transform: translate(-50%, -50%) rotate(0deg) scale(1);
-            opacity: 0.1;
-        }
-        30% {
-            transform: translate(-50%, -50%) rotate(2turn) translateY(-150px) rotate(-2turn) scale(0.00001);
-            opacity: 0.8;
-            filter: hue-rotate(100deg);
-        }
-        99%{
-            opacity: 1;
-        }
-        100% {
-            transform: translate(-50%, -50%) rotate(5turn) translateY(450px) rotate(-5turn) scale(2);
-            filter: hue-rotate(-600deg);
-            opacity: 0;
-        }
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+        opacity: 0.1;
+      }
+      30% {
+        transform: translate(-50%, -50%) rotate(2turn) translateY(-150px) rotate(-2turn) scale(0.00001);
+        opacity: 0.8;
+         filter: hue-rotate(100deg);
+      }
+      99%{
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(5turn) translateY(450px) rotate(-5turn) scale(2);
+        filter: hue-rotate(-600deg);
+        opacity: 0;
+      }
     }
 
-    @for $i from 1 through 36 {
-        .loading-circle:nth-child(#{$i}) {
-            animation: spiral 25s ease-out infinite alternate;
-            animation-delay: 0.12s * $i;
-            background-color: hsl(random(40), 100%, 50%);
-        }
+    @for $i from 1 through 42 {
+      .loading-circle:nth-child(#{$i}) {
+        animation: spiral 30s ease-out infinite alternate;
+        animation-delay: 0.14s * $i;
+        background-color: hsl(random(40), 100%, 50%);
+      }
     }
-}
+  }

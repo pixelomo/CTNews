@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    for (let i = 0; i < 42; i++) {
+        $('#loading').append('<div class="loading-circle"></div>');
+    }
     tinymce.init({
         selector: "#translation-editor",
         height: '100vh',
