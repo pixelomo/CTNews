@@ -113,6 +113,7 @@ $(document).ready(function () {
 
                             $("#original-title").html(article.title);
                             $("#original-html").html(article.html);
+                            $("#original-link").attr("href", article.link);
                             tinymce.get("translation-editor").setContent(`<h3>${article.title_translated}</h3>${article.content_translated || ''}`);
                         });
 
