@@ -1,0 +1,187 @@
+#loading {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(255, 255, 255, 0.8); }
+  #loading #loading-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: #222;
+    z-index: 999; }
+  #loading .loading-circle {
+    border-radius: 50%;
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.1;
+    filter: hue-rotate(600deg); }
+
+@keyframes spiral {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    opacity: 0.1; }
+  30% {
+    transform: translate(-50%, -50%) rotate(2turn) translateY(-150px) rotate(-2turn) scale(0.00001);
+    opacity: 0.8;
+    filter: hue-rotate(100deg); }
+  99% {
+    opacity: 1; }
+  100% {
+    transform: translate(-50%, -50%) rotate(5turn) translateY(450px) rotate(-5turn) scale(2);
+    filter: hue-rotate(-600deg);
+    opacity: 0; } }
+  #loading .loading-circle:nth-child(1) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.12s;
+    background-color: #ff0d00; }
+  #loading .loading-circle:nth-child(2) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.24s;
+    background-color: darkorange; }
+  #loading .loading-circle:nth-child(3) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.36s;
+    background-color: #ff2b00; }
+  #loading .loading-circle:nth-child(4) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.48s;
+    background-color: #ff2b00; }
+  #loading .loading-circle:nth-child(5) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.6s;
+    background-color: #ff1100; }
+  #loading .loading-circle:nth-child(6) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.72s;
+    background-color: #ff0d00; }
+  #loading .loading-circle:nth-child(7) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.84s;
+    background-color: #ff0400; }
+  #loading .loading-circle:nth-child(8) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 0.96s;
+    background-color: #ff0d00; }
+  #loading .loading-circle:nth-child(9) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.08s;
+    background-color: #ffa600; }
+  #loading .loading-circle:nth-child(10) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.2s;
+    background-color: #ff5900; }
+  #loading .loading-circle:nth-child(11) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.32s;
+    background-color: #ff9900; }
+  #loading .loading-circle:nth-child(12) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.44s;
+    background-color: #ffa200; }
+  #loading .loading-circle:nth-child(13) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.56s;
+    background-color: #ff3700; }
+  #loading .loading-circle:nth-child(14) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.68s;
+    background-color: #ff3700; }
+  #loading .loading-circle:nth-child(15) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.8s;
+    background-color: #ff5500; }
+  #loading .loading-circle:nth-child(16) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 1.92s;
+    background-color: #ff7b00; }
+  #loading .loading-circle:nth-child(17) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.04s;
+    background-color: #ff7700; }
+  #loading .loading-circle:nth-child(18) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.16s;
+    background-color: #ff0900; }
+  #loading .loading-circle:nth-child(19) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.28s;
+    background-color: #ff4000; }
+  #loading .loading-circle:nth-child(20) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.4s;
+    background-color: #ff3c00; }
+  #loading .loading-circle:nth-child(21) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.52s;
+    background-color: #ff7b00; }
+  #loading .loading-circle:nth-child(22) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.64s;
+    background-color: #ff4d00; }
+  #loading .loading-circle:nth-child(23) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.76s;
+    background-color: #ffa200; }
+  #loading .loading-circle:nth-child(24) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 2.88s;
+    background-color: #ffaa00; }
+  #loading .loading-circle:nth-child(25) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3s;
+    background-color: #ff2f00; }
+  #loading .loading-circle:nth-child(26) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.12s;
+    background-color: #ff9500; }
+  #loading .loading-circle:nth-child(27) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.24s;
+    background-color: #ff8000; }
+  #loading .loading-circle:nth-child(28) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.36s;
+    background-color: #ff9900; }
+  #loading .loading-circle:nth-child(29) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.48s;
+    background-color: #ff1e00; }
+  #loading .loading-circle:nth-child(30) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.6s;
+    background-color: #ff9900; }
+  #loading .loading-circle:nth-child(31) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.72s;
+    background-color: #ffa200; }
+  #loading .loading-circle:nth-child(32) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.84s;
+    background-color: #ff0400; }
+  #loading .loading-circle:nth-child(33) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 3.96s;
+    background-color: #ffa600; }
+  #loading .loading-circle:nth-child(34) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 4.08s;
+    background-color: #ff4d00; }
+  #loading .loading-circle:nth-child(35) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 4.2s;
+    background-color: #ff5500; }
+  #loading .loading-circle:nth-child(36) {
+    animation: spiral 25s ease-out infinite alternate;
+    animation-delay: 4.32s;
+    background-color: #ff5900; }

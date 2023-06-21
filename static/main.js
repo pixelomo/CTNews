@@ -31,7 +31,7 @@ $(document).ready(function () {
                 renderArticles(articleData);
             }).always(function() {
                 // End Loading UI
-                $("#loading").hide();
+                $("#loading").remove();
             });
         });
     }
