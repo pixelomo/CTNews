@@ -54,7 +54,6 @@ class ArticlesPipeline(object):
             chunks = list(split_text_by_chunks(text, 5450))
         else:
             chunks = [text]
-
         translated_chunks = []
 
         for i, chunk in enumerate(chunks):
