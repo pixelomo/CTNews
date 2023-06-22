@@ -10,6 +10,8 @@ class Article(scrapy.Item):
     text_chinese = scrapy.Field()
     title_indonesian = scrapy.Field()
     text_indonesian = scrapy.Field()
+    title_korean = scrapy.Field()
+    text_korean = scrapy.Field()
     html = scrapy.Field()
     title_translated = scrapy.Field()
     content_translated = scrapy.Field()
