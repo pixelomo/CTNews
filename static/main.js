@@ -153,9 +153,8 @@ $(document).ready(function () {
 
     function formatDateToJST(dateString) {
         const localDate = new Date(dateString);
-        // const offset = -9 * 60; // Tokyo is UTC+9
-        // const jstDate = new Date(localDate.getTime() + (offset + localDate.getTimezoneOffset()) * 60000);
-        const jstDate = new Date(localDate.getTime() + (localDate.getTimezoneOffset()) * 60000);
+        const offset = 9 * 60; // Tokyo is UTC+9
+        const jstDate = new Date(localDate.getTime() + (offset + localDate.getTimezoneOffset()) * 60000);
 
         // specify date and time formatting options
         const dateOptions = { month: '2-digit', day: '2-digit' };
