@@ -10,7 +10,7 @@ class CTJPSpider(scrapy.Spider):
     ]
     custom_settings = {
         'ITEM_PIPELINES': {
-            'articles.pipelines.CountPipeline': 1,
+            'articles.stats_pipelines.StatsPipeline': 1,
         }
     }
 

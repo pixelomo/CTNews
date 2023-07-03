@@ -1,6 +1,6 @@
 from app import app, db, ArticleStats
 
-class CountPipeline(object):
+class StatsPipeline(object):
     def process_item(self, item, spider):
         with app.app_context():
             session = db.create_scoped_session()
