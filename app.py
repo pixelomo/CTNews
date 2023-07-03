@@ -69,6 +69,7 @@ class Article(db.Model):
     title_translated = db.Column(db.String, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
     source = Column(String)
+    character_count = db.Column(db.Integer, nullable=True)
 
     def to_dict(self):
         return {
@@ -87,6 +88,7 @@ class Article(db.Model):
             "text_indonesian": self.text_indonesian,
             "title_korean": self.title_korean,
             "text_korean": self.text_korean,
+            "character_count": self.character_count,
         }
 
 class SaveArticleResource(Resource):
@@ -109,6 +111,7 @@ class SaveArticleResource(Resource):
             text_indonesian=data["text_indonesian"],
             title_korean=data["title_korean"],
             text_korean=data["text_korean"],
+            character_count=data["character_count"],
         )
         print(f"Article to be saved: {article.__dict__}")
 

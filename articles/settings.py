@@ -8,4 +8,5 @@ DOWNLOAD_DELAY = 4  # Add a delay between requests
 HTTPCACHE_ENABLED = True
 ITEM_PIPELINES = {
     'articles.pipelines.ArticlesPipeline': 300,
+    'articles.pipelines.CountPipeline': 400,
 }
