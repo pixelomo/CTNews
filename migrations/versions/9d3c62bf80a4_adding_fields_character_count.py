@@ -17,7 +17,13 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('article', sa.Integer('character_count'), nullable=True),
+    op.create_table('article_stats',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('pubDate', sa.DateTime(), nullable=False),
+    sa.Column('source', sa.String(length=200), nullable=False),
+    sa.Column('character_count', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
 
 def downgrade():
-    op.drop_column('article', 'character_count')
+    op.drop_table('article_stats')

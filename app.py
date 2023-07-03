@@ -69,7 +69,6 @@ class Article(db.Model):
     title_translated = db.Column(db.String, nullable=True)
     content_translated = db.Column(db.Text, nullable=True)
     source = Column(String)
-    character_count = db.Column(db.Integer, nullable=True)
 
     def to_dict(self):
         return {
@@ -87,7 +86,20 @@ class Article(db.Model):
             "title_indonesian": self.title_indonesian,
             "text_indonesian": self.text_indonesian,
             "title_korean": self.title_korean,
-            "text_korean": self.text_korean,
+            "text_korean": self.text_korean
+        }
+
+class ArticleStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    source = db.Column(db.String, nullable=False)
+    character_count = db.Column(db.Integer, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "pubDate": self.pubDate.isoformat(),
+            "source": self.source,
             "character_count": self.character_count,
         }
 
