@@ -2,6 +2,10 @@ from app import app, db, ArticleStats
 
 class StatsPipelines(object):
     def process_item(self, item, spider):
+
+        if item["source"] not in ["CTJP", "Coinpost"]:
+            return item
+
         with app.app_context():
             article = ArticleStats()
             print("STATS PIPELINE STARTED")
