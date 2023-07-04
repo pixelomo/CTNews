@@ -1,6 +1,6 @@
 from app import app, db, ArticleStats
 
-class StatsPipeline(object):
+class StatsPipelines(object):
     def process_item(self, item, spider):
         with app.app_context():
             article = ArticleStats()
