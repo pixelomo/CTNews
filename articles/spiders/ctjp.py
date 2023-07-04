@@ -27,11 +27,14 @@ class CTJPSpider(scrapy.Spider):
                 })
 
     def parse_article(self, response):
+        scraped_title = response.meta["title"]
         scraped_link = response.url
         scraped_pubDate = response.meta["pubDate"]
         scraped_text = "".join(response.css(".post-content *::text").getall())
+        # print(scraped_title)
 
         yield {
+            "title": scraped_title,
             "pubDate": scraped_pubDate,
             "link": scraped_link,
             "text": scraped_text,
@@ -40,9 +43,9 @@ class CTJPSpider(scrapy.Spider):
 
     def article_exists(self, title, link):
         with app.app_context():
-            from app import Article as ArticleModel
+            from app import ArticleStats
             # Check if an article with the same link or title already exists in the database
-            existing_article = ArticleModel.query.filter((ArticleModel.link == link) | (ArticleModel.title == title)).first()
+            existing_article = ArticleStats.query.filter((ArticleStats.link == link) | (ArticleStats.title == title)).first()
 
             if existing_article:
                 print(f"Article with the same link or title already exists: {link} - {title}")

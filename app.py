@@ -93,6 +93,7 @@ class ArticleStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pubDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     source = db.Column(db.String, nullable=False)
+    title = db.Column(db.String, nullable=True)
     character_count = db.Column(db.Integer, nullable=False)
 
     def to_dict(self):
@@ -100,6 +101,7 @@ class ArticleStats(db.Model):
             "id": self.id,
             "pubDate": self.pubDate.isoformat(),
             "source": self.source,
+            "title": self.title,
             "character_count": self.character_count,
         }
 
