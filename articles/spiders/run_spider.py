@@ -10,6 +10,7 @@ def main():
     subprocess.run(["scrapy", "crawl", "theblock"])
     # subprocess.run(["scrapy", "crawl", "cryptonews"])
     subprocess.run(["scrapy", "crawl", "coindesk"])
+    subprocess.run(["scrapy", "crawl", "ctjp"])
 
 if __name__ == "__main__":
     main()
