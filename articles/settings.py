@@ -7,6 +7,6 @@ DOWNLOAD_TIMEOUT = 480  # Set the download timeout
 DOWNLOAD_DELAY = 4  # Add a delay between requests
 HTTPCACHE_ENABLED = True
 ITEM_PIPELINES = {
-    'articles.pipelines.ArticlesPipeline': 300,
-    'articles.stats_pipelines.StatsPipeline': 400,
+    'articles.stats_pipelines.StatsPipeline': 300,
+    'articles.pipelines.ArticlesPipeline': 400,
 }
