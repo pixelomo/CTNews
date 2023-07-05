@@ -138,6 +138,8 @@ class ArticlesPipeline(object):
         print("START: process_item called")
 
         with app.app_context():
+            if item["source"] in ["CTJP", "Coinpost"]:
+                return item
             # Check if the title field is not None
             if item.get("title"):
                 print("Processing article with title: ", item["title"])

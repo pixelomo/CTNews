@@ -48,7 +48,7 @@ class CTJPSpider(scrapy.Spider):
             existing_article = ArticleStats.query.filter((ArticleStats.link == link) | (ArticleStats.title == title)).first()
 
             if existing_article:
-                print(f"Article with the same link or title already exists: {link} - {title}")
+                print(f"Stats article with the same link or title already exists: {link} - {title}")
                 return True
 
         return False
