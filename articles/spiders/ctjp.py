@@ -8,11 +8,11 @@ class CTJPSpider(scrapy.Spider):
     start_urls = [
         'https://jp.cointelegraph.com/rss',
     ]
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'articles.stats_pipelines.StatsPipeline': 300,
-        }
-    }
+    # custom_settings = {
+    #     'ITEM_PIPELINES': {
+    #         'articles.stats_pipelines.StatsPipeline': 300,
+    #     }
+    # }
 
     def parse(self, response):
         items = response.xpath("//item")
@@ -32,6 +32,7 @@ class CTJPSpider(scrapy.Spider):
         scraped_pubDate = response.meta["pubDate"]
         scraped_text = "".join(response.css(".post-content *::text").getall())
         # print(scraped_title)
+        print("scraped CTJP")
 
         yield {
             "title": scraped_title,
