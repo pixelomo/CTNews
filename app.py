@@ -9,7 +9,6 @@ from sqlalchemy import Column, String, func
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from flask_migrate import Migrate
-from remove_duplicate_stats import remove_duplicates
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
@@ -196,6 +195,27 @@ class ArticleCountResource(Resource):
     def get(self):
         count = Article.query.count()
         return jsonify({"count": count})
+
+def remove_duplicates():
+    with app.app_context():
+        articles = ArticleStats.query.all()
+        unique_titles = set()
+        duplicates = []
+
+        for article in articles:
+            if article.title in unique_titles:
+                duplicates.append(article)
+            else:
+                unique_titles.add(article.title)
+
+        for duplicate in duplicates:
+            try:
+                db.session.delete(duplicate)
+                db.session.commit()
+                print(f"Deleted duplicate article: {duplicate.title}")
+            except IntegrityError:
+                db.session.rollback()
+                print("Error deleting duplicate article.")
 
 api.add_resource(SaveArticleResource, "/api/save_article")
 api.add_resource(GetAllArticlesResource, "/api/get_all_articles")
