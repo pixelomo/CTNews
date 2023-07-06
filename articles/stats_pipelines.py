@@ -2,7 +2,7 @@ from app import app, db, ArticleStats
 
 class StatsPipeline(object):
     def process_item(self, item, spider):
-        if item["source"] not in ["CTJP"]:
+        if item["source"] not in ["CTJP", "Coinpost"]:
             return item
 
         with app.app_context():
