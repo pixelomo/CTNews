@@ -5,10 +5,11 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from dateutil.parser import parse
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, func
 from sqlalchemy.exc import IntegrityError
 from flask import render_template
 from flask_migrate import Migrate
+from remove_duplicate_stats import remove_duplicates
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL', 'sqlite:///articles.db').replace('postgres://', 'postgresql://')
@@ -48,6 +49,55 @@ def get_dummy_data():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/stats')
+def stats():
+    with app.app_context():
+        articles = ArticleStats.query.all()
+        data = []
+        for article in articles:
+            data.append({
+                'id': article.id,
+                'title': article.title,
+                'pubDate': article.pubDate,
+                'character_count': article.character_count,
+                'source': article.source
+            })
+        return jsonify(data)
+
+@app.route('/stats/ctjp')
+def ctjp_stats():
+    with app.app_context():
+        remove_duplicates()
+        data = db.session.query(
+            func.date(ArticleStats.pubDate),
+            func.count(ArticleStats.id),
+            func.sum(ArticleStats.character_count)
+        ).filter(ArticleStats.source == 'CTJP'
+        ).group_by(func.date(ArticleStats.pubDate)).all()
+
+        return jsonify([{
+            'date': str(record[0]),
+            'article_count': record[1],
+            'character_count': int(record[2])
+        } for record in data])
+
+@app.route('/stats/coinpost')
+def coinpost_stats():
+    with app.app_context():
+        remove_duplicates()
+        data = db.session.query(
+            func.date(ArticleStats.pubDate),
+            func.count(ArticleStats.id),
+            func.sum(ArticleStats.character_count)
+        ).filter(ArticleStats.source == 'Coinpost'
+        ).group_by(func.date(ArticleStats.pubDate)).all()
+
+        return jsonify([{
+            'date': str(record[0]),
+            'article_count': record[1],
+            'character_count': int(record[2])
+        } for record in data])
 
 @app.route('/static/favicon.ico')
 def favicon():
