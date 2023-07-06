@@ -15,17 +15,16 @@ class CTJPSpider(scrapy.Spider):
     # }
 
     def parse(self, response):
-        print("started scraping CTJP")
         items = response.xpath("//item")
         for item in items:
             link = item.xpath("link/text()").get()
             title = item.xpath("title/text()").get()
-            # if link and "/magazine" not in link and not self.article_exists(title, link):
-            yield scrapy.Request(link, callback=self.parse_article, meta={
-                "title": title,
-                "pubDate": item.xpath("pubDate/text()").get(),
-                "source": "CTJP",
-            })
+            if not self.article_exists(title):
+                yield scrapy.Request(link, callback=self.parse_article, meta={
+                    "title": title,
+                    "pubDate": item.xpath("pubDate/text()").get(),
+                    "source": "CTJP",
+                })
 
     def parse_article(self, response):
         scraped_title = response.meta["title"]
@@ -33,7 +32,7 @@ class CTJPSpider(scrapy.Spider):
         scraped_pubDate = response.meta["pubDate"]
         scraped_text = "".join(response.css(".post-content *::text").getall())
         # print(scraped_title)
-        print("finished scraping CTJP")
+        # print("finished scraping CTJP")
 
         yield {
             "title": scraped_title,
@@ -43,14 +42,14 @@ class CTJPSpider(scrapy.Spider):
             "source": "CTJP"
         }
 
-    def article_exists(self, title, link):
+    def article_exists(self, title):
         with app.app_context():
             from app import ArticleStats
-            # Check if an article with the same link or title already exists in the database
-            existing_article = ArticleStats.query.filter((ArticleStats.link == link) | (ArticleStats.title == title)).first()
+            # Check if an article with the same title already exists in the database
+            existing_article = ArticleStats.query.filter((ArticleStats.title == title)).first()
 
             if existing_article:
-                print(f"Stats article with the same link or title already exists: {link} - {title}")
+                print(f"Stats article with the same link or title already exists:  - {title}")
                 return True
 
         return False
