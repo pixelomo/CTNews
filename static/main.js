@@ -15,13 +15,15 @@ $(document).ready(function () {
     });
 
     function loadStats(source) {
+        console.log(`loadStats called with source: ${source}`);
         var statsRoute = `/stats/${source}`;
 
         $.getJSON(statsRoute).done(function(statsData) {
             renderStats(statsData, source);
         });
     }
-    if (window.location.pathname === "/stats") {
+    console.log(window.location.pathname);
+    if (window.location.pathname == "/stats") {
         loadStats('ctjp');
         loadStats('coinpost');
     }
