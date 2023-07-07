@@ -21,8 +21,10 @@ $(document).ready(function () {
             renderStats(statsData, source);
         });
     }
-    loadStats('ctjp');
-    loadStats('coinpost');
+    if (window.location.pathname === "/stats") {
+        loadStats('ctjp');
+        loadStats('coinpost');
+    }
 
     function renderStats(data, source) {
         // Create a container for the source stats

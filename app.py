@@ -52,17 +52,35 @@ def index():
 @app.route('/stats')
 def stats():
     with app.app_context():
-        articles = ArticleStats.query.all()
-        data = []
-        for article in articles:
-            data.append({
-                'id': article.id,
-                'title': article.title,
-                'pubDate': article.pubDate,
-                'character_count': article.character_count,
-                'source': article.source
-            })
-        return jsonify(data)
+        # Fetch data for CTJP and Coinpost
+        ctjp_data = db.session.query(
+            func.date(ArticleStats.pubDate),
+            func.count(ArticleStats.id),
+            func.sum(ArticleStats.character_count)
+        ).filter(ArticleStats.source == 'CTJP'
+        ).group_by(func.date(ArticleStats.pubDate)).all()
+
+        coinpost_data = db.session.query(
+            func.date(ArticleStats.pubDate),
+            func.count(ArticleStats.id),
+            func.sum(ArticleStats.character_count)
+        ).filter(ArticleStats.source == 'Coinpost'
+        ).group_by(func.date(ArticleStats.pubDate)).all()
+
+        # Convert data to a format suitable for the template
+        ctjp_stats = [{
+            'date': str(record[0]),
+            'article_count': record[1],
+            'character_count': int(record[2])
+        } for record in ctjp_data]
+
+        coinpost_stats = [{
+            'date': str(record[0]),
+            'article_count': record[1],
+            'character_count': int(record[2])
+        } for record in coinpost_data]
+
+        return render_template('stats.html', ctjp_stats=ctjp_stats, coinpost_stats=coinpost_stats)
 
 @app.route('/stats/ctjp')
 def ctjp_stats():
