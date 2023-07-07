@@ -3,12 +3,13 @@
     <div id="stats-container"></div>
 </div>
 <script>
-    $(document).ready(function () {
+    document.addEventListener("DOMContentLoaded", function() {
         function loadStats(source) {
             var statsRoute = `/stats/${source}`;
-            $.getJSON(statsRoute).done(function(statsData) {
-                renderStats(statsData, source);
-            });
+            fetch(statsRoute)
+                .then(response => response.json())
+                .then(statsData => renderStats(statsData, source))
+                .catch(error => console.error('Error:', error));
         }
 
         loadStats('ctjp');
