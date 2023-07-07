@@ -14,67 +14,6 @@ $(document).ready(function () {
         },
     });
 
-    function loadStats(source) {
-        console.log(`loadStats called with source: ${source}`);
-        var statsRoute = `/stats/${source}`;
-
-        $.getJSON(statsRoute).done(function(statsData) {
-            renderStats(statsData, source);
-        });
-    }
-    console.log(window.location.pathname);
-    if (window.location.pathname == "/stats") {
-        loadStats('ctjp');
-        loadStats('coinpost');
-    }
-
-    function renderStats(data, source) {
-        // Create a container for the source stats
-        const sourceContainer = document.createElement('div');
-        sourceContainer.id = `${source}-stats-container`;
-
-        // Create source title
-        const sourceTitle = document.createElement('h2');
-        sourceTitle.textContent = source;
-        sourceContainer.appendChild(sourceTitle);
-
-        // Create table and header
-        const table = document.createElement('table');
-        table.classList.add('table');
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        ['Date', 'Article Count', 'Character Count'].forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        // Create table body
-        const tbody = document.createElement('tbody');
-        data.forEach(stat => {
-            const row = document.createElement('tr');
-            const dateCell = document.createElement('td');
-            dateCell.textContent = stat.date;
-            const articlesCell = document.createElement('td');
-            articlesCell.textContent = stat.article_count;
-            const charactersCell = document.createElement('td');
-            charactersCell.textContent = stat.character_count;
-            row.appendChild(dateCell);
-            row.appendChild(articlesCell);
-            row.appendChild(charactersCell);
-            tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-
-        // Append the table to the source container
-        sourceContainer.appendChild(table);
-
-        // Append the source container to the main stats container
-        document.getElementById('stats-container').appendChild(sourceContainer);
-    }
-
     function loadArticles() {
         // Start Loading UI
         $("#loading").show().find("#loading-text").text("Loading...");
